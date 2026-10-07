@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Tiny Wins</title>
+
+<!-- PWA & Mobile Meta Tags -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#7b6cf0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tiny Wins">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- Supabase Realtime & QR Code Libraries for 24/7 Cloud Sync -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+<style>
+:root{--bg:#f6f4ff;--ink:#2b2850;--mute:#8985aa;--card:#fff;--line:#e7e3fb;--p:#7b6cf0;--pl:#ece9ff;--mint:#4fd1a1;--sun:#ffc94d;--pink:#ff6fa8;--pl2:#ffe3ef;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;color:var(--ink);font:16px/1.5 Nunito,system-ui,sans-serif;min-height:100vh;
+background:radial-gradient(circle at 8% 0%,#ffe9f2 0,transparent 32%),radial-gradient(circle at 95% 8%,#dff3ff 0,transparent 30%),radial-gradient(circle at 70% 100%,#fff3cf 0,transparent 30%),var(--bg)}
+h1,h2,h3,.f{font-family:Fredoka,Nunito,sans-serif;font-weight:500;margin:0}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid var(--p);outline-offset:2px;border-radius:10px}
+main{max-width:880px;margin:0 auto;padding:22px 16px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.logo{font-size:30px;display:flex;gap:10px;align-items:center}
+.logo i{font-style:normal;display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:var(--sun);transform:rotate(-8deg);font-size:22px}
+.head-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tabs{display:flex;background:#fff;border:2px solid var(--line);border-radius:999px;padding:4px}
+.tabs button{padding:8px 18px;border-radius:999px;font-family:Fredoka;font-weight:500;color:var(--mute)}
+.tabs button.on{background:var(--p);color:#fff}
+.card{background:var(--card);border:2px solid var(--line);border-radius:26px;padding:20px;margin-bottom:18px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.nav h2{font-size:24px}
+.chip{display:inline-block;background:var(--pl);color:var(--p);border-radius:999px;padding:2px 12px;font-size:14px;font-weight:700;margin-left:8px;vertical-align:middle}
+.rnd{width:40px;height:40px;border-radius:50%;background:var(--pl);color:var(--p);font-size:20px;font-weight:700}
+.pill{padding:8px 16px;border-radius:999px;background:var(--pl);color:var(--p);font-weight:700;display:inline-flex;align-items:center;gap:6px}
+.pill:hover,.rnd:hover{background:var(--p);color:#fff}
+.sum{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.ring{position:relative;width:130px;height:130px;flex:none}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font:600 28px Fredoka}
+.ring circle{fill:none;stroke-width:12;stroke-linecap:round}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:var(--pl);border-radius:18px;padding:10px 16px}
+.stat.s2{background:#fff3cf}.stat.s3{background:#dcf8ee}
+.stat b{display:block;font:600 24px Fredoka}.stat span{font-size:13px;color:var(--mute)}
+.msg{font:500 19px Fredoka;margin:0 0 4px}
+.addrow{display:flex;gap:8px;margin-bottom:14px}
+.addrow input{flex:1;min-width:0;border:2px solid var(--line);border-radius:16px;padding:11px 14px;background:#fff}
+.addrow input:focus{border-color:var(--p);outline:0}
+.go{background:var(--p);color:#fff;border-radius:16px;padding:0 20px;font-family:Fredoka;font-weight:500}
+.go:hover{filter:brightness(1.08)}
+.hi-t{border:2px solid var(--line);border-radius:16px;padding:0 12px;color:var(--mute);font-weight:700;white-space:nowrap}
+.hi-t.on{background:var(--pl2);border-color:var(--pink);color:var(--pink)}
+.t{display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px dashed var(--line)}
+.t:last-child{border:0}
+.t span{flex:1;min-width:0;overflow-wrap:anywhere}
+.t.d span{color:var(--mute);text-decoration:line-through}
+.ck,.bx{width:30px;height:30px;border-radius:50%;border:2.5px solid #cfc9f3;display:grid;place-items:center;color:#fff;font-weight:800;flex:none;background:#fff}
+.ck.on,.bx.on{background:var(--mint);border-color:var(--mint)}
+.pop{animation:pop .35s}
+@keyframes pop{50%{transform:scale(1.35) rotate(-8deg)}}
+.x{color:#c3bfdc;font-size:20px;width:28px;height:28px;border-radius:50%}
+.x:hover{background:var(--pl2);color:var(--pink)}
+.bars{display:flex;align-items:flex-end;gap:6px;height:130px;margin-top:6px}
+.bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;height:100%}
+.bar i{display:block;width:100%;max-width:34px;border-radius:10px 10px 6px 6px;background:var(--line);min-height:6px;transition:height .4s}
+.bar small{font-size:12px;color:var(--mute);font-weight:700}
+.bar.sel small{color:var(--p)}.bar.sel i{outline:3px solid var(--sun);outline-offset:2px}
+.hint{color:var(--mute);font-size:14px;margin:0}
+.wk{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -6px;padding:0 6px 6px}
+.g{display:grid;grid-template-columns:minmax(190px,1fr) repeat(7,44px);align-items:center;min-width:540px}
+.g>div{padding:7px 0}
+.g .h{text-align:center;font:500 13px Fredoka;color:var(--mute);line-height:1.2;border-radius:12px;padding:6px 0}
+.g .h b{display:block;font-size:17px;color:var(--ink)}
+.g .h.td{background:var(--sun);color:var(--ink)}
+.tk{display:flex;align-items:center;gap:8px;padding-right:8px!important}
+.tk span{flex:1;min-width:0;overflow-wrap:anywhere}
+.row.hp .tk span{font-weight:700}
+.st{font-size:20px;color:#d2cdee;width:28px;flex:none}
+.hp .st{color:var(--sun)}
+.hp .tk{background:linear-gradient(90deg,var(--pl2),transparent);border-radius:14px 0 0 14px;box-shadow:inset 4px 0 0 var(--pink)}
+.cell{display:grid;place-items:center}
+.cell.td{background:#fff8e1}
+.bx{width:28px;height:28px}
+.prog{height:14px;background:var(--pl);border-radius:99px;overflow:hidden;flex:1;min-width:140px}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--p),var(--pink));border-radius:99px;transition:width .4s}
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.danger.arm{background:var(--pink);color:#fff}
+
+/* 24/7 Cloud Sync & Pairing Modal Styling */
+.sync-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:700;font-family:Fredoka;background:#fff;border:2px solid var(--line);color:var(--mute);cursor:pointer;transition:all .2s}
+.sync-badge:hover{border-color:var(--p);color:var(--p)}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--mute);display:inline-block}
+.sync-badge.online .sync-dot{background:var(--mint);box-shadow:0 0 0 3px #dcf8ee}
+.sync-badge.syncing .sync-dot{background:var(--sun);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.4)}}
+
+.modal-backdrop{position:fixed;inset:0;background:rgba(43,40,80,0.45);backdrop-filter:blur(4px);display:grid;place-items:center;z-index:999;padding:16px;animation:fadein .2s ease-out}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.modal-card{background:var(--card);border:2px solid var(--line);border-radius:28px;padding:26px;max-width:440px;width:100%;box-shadow:0 20px 40px rgba(43,40,80,0.15);position:relative;text-align:center;max-height:92vh;overflow-y:auto}
+.modal-close{position:absolute;top:18px;right:18px;font-size:24px;color:var(--mute);width:36px;height:36px;border-radius:50%;display:grid;place-items:center}
+.modal-close:hover{background:var(--pl2);color:var(--pink)}
+.qr-frame{background:#fff;border:2px dashed var(--line);border-radius:20px;padding:14px;display:inline-block;margin:14px 0 10px}
+.qr-frame canvas, .qr-frame img{display:block;width:180px;height:180px;border-radius:10px;margin:0 auto}
+.url-box{background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;font-size:13px;font-weight:600;word-break:break-all}
+.url-box button{background:var(--p);color:#fff;border-radius:10px;padding:6px 12px;font-family:Fredoka;font-size:13px;white-space:nowrap;flex:none}
+.url-box button:hover{filter:brightness(1.08)}
+.room-box{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--pl);border-radius:12px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--p);margin-bottom:12px}
+.room-box input{border:1px solid var(--line);background:#fff;border-radius:8px;padding:3px 8px;font-size:13px;width:130px;text-align:center;color:var(--ink)}
+.room-box button{font-size:12px;background:var(--p);color:#fff;border-radius:8px;padding:3px 10px}
+.device-tip{text-align:left;background:var(--pl);border-radius:16px;padding:12px 14px;font-size:13px;color:var(--ink);margin-top:10px;line-height:1.45}
+.device-tip b{color:var(--p)}
+.install-btn{background:var(--pl);color:var(--p);font-weight:700;border-radius:999px;padding:6px 14px;font-size:13px;display:none;align-items:center;gap:6px}
+.install-btn:hover{background:var(--p);color:#fff}
+.install-btn.visible{display:inline-flex}
+
+@media (max-width: 600px) {
+  main{padding:14px 10px 50px}
+  .logo{font-size:25px}
+  .logo i{width:36px;height:36px;font-size:19px;border-radius:12px}
+  .card{padding:16px;border-radius:22px}
+  .nav h2{font-size:20px}
+  .tabs button{padding:7px 14px;font-size:14px}
+  .sum{gap:14px}
+  .ring{width:110px;height:110px}
+  .ring svg{width:110px;height:110px}
+  .ring b{font-size:24px}
+  .stat{padding:8px 12px}
+  .stat b{font-size:20px}
+  .msg{font-size:17px}
+  .head-actions{width:100%;justify-content:space-between}
+}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<div id="modal-root"></div>
+
+<script>
+// --- Configuration & 24/7 Cloud Sync via Supabase ---
+const K = 'tinywins.v1';
+const ROOM_KEY = 'tinywins.room_id';
+const SUPABASE_URL = 'https://qkcfpxqrxhxdfdycvnuu.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFrY2ZweHFyeGh4ZGZkeWN2bnV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNDc3MDQsImV4cCI6MjEwNjkyMzcwNH0.CVtDAijw3pzFECAHkp2OuDJUNpftzRUkLtEoQwuf2Mk';
+const GITHUB_PAGES_BASE = 'https://sha3in2-sketch.github.io/tiny-wins/';
+
+// Client ID to prevent echoes
+const clientId = Math.random().toString(36).slice(2, 9);
+const uid = () => Math.random().toString(36).slice(2, 9);
+
+// Resolve Room ID: check URL query parameter ?room=... or localStorage, or generate default
+function getInitialRoomId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const paramRoom = urlParams.get('room');
+  if (paramRoom && paramRoom.trim()) {
+    const cleanRoom = paramRoom.trim();
+    localStorage.setItem(ROOM_KEY, cleanRoom);
+    // Clean URL without reloading
+    const cleanUrl = window.location.pathname;
+    window.history.replaceState({}, document.title, cleanUrl);
+    return cleanRoom;
+  }
+  let savedRoom = localStorage.getItem(ROOM_KEY);
+  if (!savedRoom) {
+    savedRoom = 'tiny-' + uid();
+    localStorage.setItem(ROOM_KEY, savedRoom);
+  }
+  return savedRoom;
+}
+
+let currentRoomId = getInitialRoomId();
+let syncStatus = 'connecting'; // connecting, connected, offline
+let showConnectModal = false;
+let deferredInstallPrompt = null;
+let supabaseClient = null;
+let realtimeChannel = null;
+let saveDebounceTimer = null;
+
+// Initial state from localStorage
+let S = { days: {}, weeks: {} };
+try { S = JSON.parse(localStorage.getItem(K)) || S; } catch (e) {}
+
+// PWA Service Worker Registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch((err) => {
+      console.log('SW registration:', err);
+    });
+  });
+}
+
+// PWA Install Prompt Listener
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  updateHeaderControls();
+});
+
+// Setup 24/7 Supabase Cloud Sync
+function initCloudSync() {
+  if (!window.supabase) {
+    console.warn('Supabase SDK loading...');
+    setTimeout(initCloudSync, 400);
+    return;
+  }
+
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  syncWithCloud();
+}
+
+async function syncWithCloud() {
+  if (!supabaseClient) return;
+
+  try {
+    syncStatus = 'connecting';
+    updateSyncBadge();
+
+    // 1. Fetch current room state from cloud
+    const { data, error } = await supabaseClient
+      .from('sync_rooms')
+      .select('days, weeks, sender_id, updated_at')
+      .eq('room_id', currentRoomId)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Fetch room error:', error);
+      syncStatus = 'offline';
+      updateSyncBadge();
+    } else if (data) {
+      // Cloud has data for this room
+      const cloudHasTasks = (data.days && Object.keys(data.days).length > 0) ||
+                            (data.weeks && Object.keys(data.weeks).length > 0);
+      const localHasTasks = (S.days && Object.keys(S.days).length > 0) ||
+                            (S.weeks && Object.keys(S.weeks).length > 0);
+
+      if (cloudHasTasks || !localHasTasks) {
+        S.days = data.days || {};
+        S.weeks = data.weeks || {};
+        try { localStorage.setItem(K, JSON.stringify(S)); } catch (e) {}
+        render();
+      } else if (localHasTasks && !cloudHasTasks) {
+        // Upload initial local data to cloud room
+        pushStateToCloud();
+      }
+      syncStatus = 'connected';
+      updateSyncBadge();
+    } else {
+      // Room doesn't exist yet in cloud -> create it with current state
+      pushStateToCloud();
+      syncStatus = 'connected';
+      updateSyncBadge();
+    }
+
+    // 2. Subscribe to Realtime Postgres changes for this room
+    if (realtimeChannel) {
+      supabaseClient.removeChannel(realtimeChannel);
+    }
+
+    realtimeChannel = supabaseClient.channel('sync-room-' + currentRoomId)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'sync_rooms', filter: `room_id=eq.${currentRoomId}` },
+        (payload) => {
+          const newRow = payload.new;
+          if (newRow && newRow.sender_id !== clientId) {
+            S.days = newRow.days || {};
+            S.weeks = newRow.weeks || {};
+            try { localStorage.setItem(K, JSON.stringify(S)); } catch (e) {}
+            render();
+          }
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          syncStatus = 'connected';
+          updateSyncBadge();
+        } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+          syncStatus = 'offline';
+          updateSyncBadge();
+        }
+      });
+
+  } catch (err) {
+    console.error('Cloud sync initialization error:', err);
+    syncStatus = 'offline';
+    updateSyncBadge();
+  }
+}
+
+// Push local state to Cloud (Supabase)
+async function pushStateToCloud() {
+  if (!supabaseClient) return;
+  try {
+    await supabaseClient.from('sync_rooms').upsert({
+      room_id: currentRoomId,
+      days: S.days,
+      weeks: S.weeks,
+      sender_id: clientId,
+      updated_at: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('Failed to push state to cloud:', err);
+  }
+}
+
+// Save locally immediately + sync to cloud
+const save = () => {
+  try {
+    localStorage.setItem(K, JSON.stringify(S));
+  } catch (e) {}
+
+  if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+  saveDebounceTimer = setTimeout(() => {
+    pushStateToCloud();
+  }, 300);
+};
+
+// Switch Room Code manually
+function switchRoom(newRoom) {
+  if (!newRoom || !newRoom.trim()) return;
+  currentRoomId = newRoom.trim();
+  localStorage.setItem(ROOM_KEY, currentRoomId);
+  syncWithCloud();
+  if (showConnectModal) renderModal();
+}
+
+// Start cloud sync
+initCloudSync();
+
+// --- Core Tiny Wins Date & Calculation Helpers ---
+const pad = n => String(n).padStart(2, '0');
+const key = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const dt = k => new Date(k + 'T00:00:00');
+const add = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const mon = d => add(d, -((d.getDay() + 6) % 7));
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const today = () => key(new Date());
+
+let tab = 'day';
+let sel = key(add(new Date(), 1)); // Opens on tomorrow
+let wk = key(mon(new Date()));     // Opens on current week
+let armed = false;
+let newHi = false;
+let pop = null;
+let refocus = false;
+
+const tasks = k => S.days[k] || [];
+const pct = k => { const t = tasks(k); return t.length ? t.filter(x => x.d).length / t.length : null; };
+
+function streak() {
+  let n = 0, d = new Date();
+  if (pct(key(d)) !== 1) d = add(d, -1);
+  while (pct(key(d)) === 1) { n++; d = add(d, -1); }
+  return n;
+}
+
+const rel = k => {
+  const n = Math.round((dt(k) - dt(today())) / 864e5);
+  return n == 0 ? 'Today' : n == 1 ? 'Tomorrow' : n == -1 ? 'Yesterday' : '';
+};
+const L = (d, o) => d.toLocaleDateString('en-GB', o);
+
+// --- Views ---
+function dayView() {
+  const t = tasks(sel), done = t.filter(x => x.d).length, p = t.length ? done / t.length : 0, C = 2 * Math.PI * 52;
+  const hist = [...Array(14)].map((_, i) => key(add(new Date(), i - 12)));
+  const set = hist.filter(k => pct(k) !== null), avg = set.length ? Math.round(set.reduce((a, k) => a + pct(k), 0) / set.length * 100) : 0;
+  const m = !t.length ? 'Nothing planned yet. Add the first thing below.' : p == 1 ? 'All done. Go enjoy the rest of the day! 🎉' : `${t.length - done} to go, you’ve got this`;
+
+  return `<section class="card"><div class="nav"><h2>${L(dt(sel), { weekday: 'long', day: 'numeric', month: 'long' })}${rel(sel) ? `<span class="chip">${rel(sel)}</span>` : ''}</h2>
+  <div class="tools"><button class="rnd" data-a="dp" aria-label="Previous day">‹</button><button class="pill" data-a="dto">Today</button><button class="pill" data-a="dtm">Tomorrow</button><button class="rnd" data-a="dn" aria-label="Next day">›</button></div></div>
+  <div class="sum"><div class="ring"><svg viewBox="0 0 130 130" width="130" height="130"><circle cx="65" cy="65" r="52" stroke="#ece9ff"/><circle cx="65" cy="65" r="52" stroke="${p == 1 ? '#4fd1a1' : '#7b6cf0'}" stroke-dasharray="${C * p} ${C}" transform="rotate(-90 65 65)" style="transition:stroke-dasharray .5s"/></svg><b>${Math.round(p * 100)}%</b></div>
+  <div><p class="msg">${m}</p><div class="stats"><div class="stat"><b>${done}/${t.length}</b><span>done</span></div><div class="stat s2"><b>${streak()} 🔥</b><span>day streak</span></div><div class="stat s3"><b>${avg}%</b><span>14-day average</span></div></div></div></div></section>
+  <section class="card"><div class="addrow"><input id="inp" maxlength="120" placeholder="What’s on for ${rel(sel).toLowerCase() || 'this day'}?" aria-label="New task"><button class="go" data-a="addd">Add</button></div>
+  ${t.map(x => `<div class="t ${x.d ? 'd' : ''}"><button class="ck ${x.d ? 'on' : ''} ${pop == x.id ? 'pop' : ''}" data-a="td" data-i="${x.id}" aria-pressed="${!!x.d}" aria-label="Mark done">${x.d ? '✓' : ''}</button><span>${esc(x.t)}</span><button class="x" data-a="rd" data-i="${x.id}" aria-label="Delete">×</button></div>`).join('')}</section>
+  <section class="card"><h3>Your last two weeks</h3><p class="hint">Tap a bar to open that day. Green means a perfect day.</p>
+  <div class="bars">${hist.map(k => { const q = pct(k); return `<button class="bar ${k == sel ? 'sel' : ''}" data-a="go" data-k="${k}" aria-label="${k}"><i style="height:${q ? Math.max(q * 100, 8) : 6}%;background:${q == 1 ? 'var(--mint)' : q ? 'var(--p)' : 'var(--line)'}"></i><small>${L(dt(k), { weekday: 'narrow' })}</small></button>`; }).join('')}</div></section>`;
+}
+
+function weekView() {
+  const W = (S.weeks[wk] || []).slice().sort((a, b) => (b.hi ? 1 : 0) - (a.hi ? 1 : 0)), ds = [...Array(7)].map((_, i) => add(dt(wk), i)), td = today();
+  const tot = W.length * 7, dn = W.reduce((a, r) => a + r.c.filter(Boolean).length, 0), p = tot ? dn / tot : 0;
+  const prev = S.weeks[key(add(dt(wk), -7))] || [];
+
+  return `<section class="card"><div class="nav"><h2>${L(ds[0], { day: 'numeric', month: 'short' })} – ${L(ds[6], { day: 'numeric', month: 'short' })}${wk == key(mon(new Date())) ? '<span class="chip">This week</span>' : ''}</h2>
+  <div class="tools"><button class="rnd" data-a="wp" aria-label="Previous week">‹</button><button class="pill" data-a="wt">This week</button><button class="rnd" data-a="wn" aria-label="Next week">›</button></div></div>
+  <div class="tools" style="margin-bottom:14px"><div class="prog"><i style="width:${p * 100}%"></i></div><b class="f">${Math.round(p * 100)}%</b>
+  <button class="pill danger ${armed ? 'arm' : ''}" data-a="reset">${armed ? 'Tap again to untick all' : 'Reset ticks'}</button>${!W.length && prev.length ? '<button class="pill" data-a="copy">Copy last week’s tasks</button>' : ''}</div>
+  <div class="addrow"><input id="inp" maxlength="120" placeholder="Something to do this week…" aria-label="New weekly task"><button class="hi-t ${newHi ? 'on' : ''}" data-a="nhi" aria-pressed="${newHi}">★ High</button><button class="go" data-a="addw">Add</button></div>
+  <div class="wk"><div class="g"><div></div>${ds.map(d => `<div class="h ${key(d) == td ? 'td' : ''}">${L(d, { weekday: 'short' })}<b>${d.getDate()}</b></div>`).join('')}
+  ${W.map(r => `<div class="tk ${r.hi ? 'hp' : ''}" style="display:contents"></div>`).join('') ? '' : ''}
+  ${W.map(r => `<div class="tk row ${r.hi ? 'hp' : ''}"><button class="st" data-a="star" data-i="${r.id}" aria-label="Toggle high priority">${r.hi ? '★' : '☆'}</button><span>${esc(r.t)}</span><button class="x" data-a="rw" data-i="${r.id}" aria-label="Delete">×</button></div>` + ds.map((d, n) => `<div class="cell ${key(d) == td ? 'td' : ''}"><button class="bx ${r.c[n] ? 'on' : ''} ${pop == r.id + n ? 'pop' : ''}" data-a="tick" data-i="${r.id}" data-n="${n}" aria-pressed="${!!r.c[n]}" aria-label="${L(d, { weekday: 'long' })}">${r.c[n] ? '✓' : ''}</button></div>`).join('')).join('')}</div></div>
+  ${W.length ? '<p class="hint" style="margin-top:8px">★ tasks stay on top. Tap the star to change priority.</p>' : '<p class="hint">Nothing here yet. Add what you want to get done this week.</p>'}</section>`;
+}
+
+function updateSyncBadge() {
+  const badge = document.getElementById('sync-badge');
+  if (!badge) return;
+  if (syncStatus === 'connected') {
+    badge.className = 'sync-badge online';
+    badge.innerHTML = `<span class="sync-dot"></span><span>24/7 Synced</span>`;
+  } else if (syncStatus === 'connecting') {
+    badge.className = 'sync-badge syncing';
+    badge.innerHTML = `<span class="sync-dot"></span><span>Syncing...</span>`;
+  } else {
+    badge.className = 'sync-badge';
+    badge.innerHTML = `<span class="sync-dot"></span><span>Offline</span>`;
+  }
+}
+
+function updateHeaderControls() {
+  const installBtn = document.getElementById('install-btn');
+  if (installBtn) {
+    if (deferredInstallPrompt) {
+      installBtn.classList.add('visible');
+    } else {
+      installBtn.classList.remove('visible');
+    }
+  }
+}
+
+function render() {
+  $app.innerHTML = `<header>
+   <h1 class="logo f"><i>✨</i>Tiny Wins</h1>
+   <div class="head-actions">
+     <button class="sync-badge ${syncStatus === 'connected' ? 'online' : (syncStatus === 'connecting' ? 'syncing' : '')}" id="sync-badge" data-a="open-modal" title="24/7 Cloud Sync & Connect Phone">
+       <span class="sync-dot"></span><span>${syncStatus === 'connected' ? '24/7 Synced' : (syncStatus === 'connecting' ? 'Syncing...' : 'Offline')}</span>
+     </button>
+     <button class="pill" data-a="open-modal" title="Connect Phone or other devices">📱 Phone</button>
+     <button class="install-btn ${deferredInstallPrompt ? 'visible' : ''}" id="install-btn" data-a="install">📲 Install</button>
+     <div class="tabs" role="tablist">
+       <button class="${tab == 'day' ? 'on' : ''}" data-a="tab" data-v="day">Daily list</button>
+       <button class="${tab == 'wk' ? 'on' : ''}" data-a="tab" data-v="wk">Weekly planner</button>
+     </div>
+   </div>
+  </header>
+  ${tab == 'day' ? dayView() : weekView()}`;
+
+  pop = null;
+  if (refocus) {
+    const i = document.getElementById('inp');
+    if (i) i.focus();
+    refocus = false;
+  }
+}
+
+function getPairingUrl() {
+  // Prefer hosted GitHub Pages URL if accessible, or current origin
+  const base = window.location.origin.includes('github.io') ? window.location.href.split('?')[0] : GITHUB_PAGES_BASE;
+  return `${base}?room=${currentRoomId}`;
+}
+
+function renderModal() {
+  const root = document.getElementById('modal-root');
+  if (!showConnectModal) {
+    root.innerHTML = '';
+    return;
+  }
+
+  const pairUrl = getPairingUrl();
+
+  root.innerHTML = `
+  <div class="modal-backdrop" id="modal-backdrop">
+    <div class="modal-card">
+      <button class="modal-close" data-a="close-modal" aria-label="Close">×</button>
+      <h2 style="font-size:24px;margin-bottom:4px">📱 24/7 Phone Sync</h2>
+      <p class="hint" style="margin-bottom:10px">Works even when your laptop is completely turned off!</p>
+
+      <div class="qr-frame">
+        <canvas id="qr-canvas"></canvas>
+      </div>
+
+      <div class="url-box">
+        <span style="font-size:12px">${pairUrl}</span>
+        <button data-a="copy-url" data-url="${pairUrl}">Copy Link</button>
+      </div>
+
+      <div class="room-box">
+        <span>Room Code:</span>
+        <input id="room-input" value="${currentRoomId}" maxlength="24" />
+        <button data-a="change-room">Save</button>
+      </div>
+
+      <div class="device-tip">
+        <b>📲 How to use as an app on your phone:</b><br>
+        1. <b>Scan the QR code</b> with your phone's camera (or open the copied link).<br>
+        2. <b>iPhone (Safari):</b> Tap <b>Share</b> ➔ <b>Add to Home Screen</b>.<br>
+        3. <b>Android (Chrome):</b> Tap menu ➔ <b>Install app</b> / <b>Add to Home screen</b>.<br>
+        4. <b>Any change on your phone or laptop syncs 24/7 in real time</b> via the cloud database, even if your laptop is powered off!
+      </div>
+    </div>
+  </div>`;
+
+  // Render QR Code onto the canvas
+  setTimeout(() => {
+    const canvas = document.getElementById('qr-canvas');
+    if (canvas && window.QRCode) {
+      window.QRCode.toCanvas(canvas, pairUrl, {
+        width: 180,
+        margin: 1,
+        color: { dark: '#2b2850', light: '#ffffff' }
+      }, (err) => {
+        if (err) console.error('QR generation error:', err);
+      });
+    }
+  }, 50);
+}
+
+const $app = document.getElementById('app');
+
+function addTask() {
+  const i = document.getElementById('inp'), v = i ? i.value.trim() : '';
+  if (!v) return;
+  if (tab == 'day') (S.days[sel] = S.days[sel] || []).push({ id: uid(), t: v, d: false });
+  else { (S.weeks[wk] = S.weeks[wk] || []).push({ id: uid(), t: v, hi: newHi, c: Array(7).fill(false) }); newHi = false; }
+  save();
+  refocus = true;
+  render();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key == 'Enter' && e.target.id == 'inp') addTask();
+  if (e.key == 'Enter' && e.target.id == 'room-input') {
+    switchRoom(e.target.value);
+  }
+});
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-a]');
+  if (!b) {
+    if (e.target.id === 'modal-backdrop') {
+      showConnectModal = false;
+      renderModal();
+    }
+    return;
+  }
+  const a = b.dataset.a, i = b.dataset.i, D = b.dataset;
+  const dl = S.days[sel] || [], wl = S.weeks[wk] || [];
+
+  if (a == 'tab') tab = D.v;
+  else if (a == 'dp') sel = key(add(dt(sel), -1));
+  else if (a == 'dn') sel = key(add(dt(sel), 1));
+  else if (a == 'dto') sel = today();
+  else if (a == 'dtm') sel = key(add(new Date(), 1));
+  else if (a == 'go') sel = D.k;
+  else if (a == 'addd' || a == 'addw') { addTask(); return; }
+  else if (a == 'td') { const t = dl.find(x => x.id == i); if (t) { t.d = !t.d; pop = t.d ? i : null; save(); } }
+  else if (a == 'rd') { S.days[sel] = dl.filter(x => x.id != i); save(); }
+  else if (a == 'wp') wk = key(add(dt(wk), -7));
+  else if (a == 'wn') wk = key(add(dt(wk), 7));
+  else if (a == 'wt') wk = key(mon(new Date()));
+  else if (a == 'nhi') newHi = !newHi;
+  else if (a == 'star') { const r = wl.find(x => x.id == i); if (r) { r.hi = !r.hi; save(); } }
+  else if (a == 'rw') { S.weeks[wk] = wl.filter(x => x.id != i); save(); }
+  else if (a == 'tick') { const r = wl.find(x => x.id == i), n = +D.n; if (r) { r.c[n] = !r.c[n]; pop = r.c[n] ? i + n : null; save(); } }
+  else if (a == 'copy') { S.weeks[wk] = (S.weeks[key(add(dt(wk), -7))] || []).map(r => ({ ...r, id: uid(), c: Array(7).fill(false) })); save(); }
+  else if (a == 'reset') {
+    if (!armed) {
+      armed = true;
+      setTimeout(() => { armed = false; render(); }, 3000);
+    } else {
+      wl.forEach(r => r.c = Array(7).fill(false));
+      armed = false;
+      save();
+    }
+  }
+  else if (a == 'open-modal') {
+    showConnectModal = true;
+    renderModal();
+    return;
+  }
+  else if (a == 'close-modal') {
+    showConnectModal = false;
+    renderModal();
+    return;
+  }
+  else if (a == 'copy-url') {
+    if (D.url) {
+      navigator.clipboard.writeText(D.url).then(() => {
+        b.innerText = 'Copied! ✓';
+        setTimeout(() => { b.innerText = 'Copy Link'; }, 2000);
+      }).catch(() => {});
+    }
+    return;
+  }
+  else if (a == 'change-room') {
+    const input = document.getElementById('room-input');
+    if (input) switchRoom(input.value);
+    return;
+  }
+  else if (a == 'install') {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      deferredInstallPrompt.userChoice.then(() => {
+        deferredInstallPrompt = null;
+        updateHeaderControls();
+      });
+    }
+    return;
+  }
+
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
