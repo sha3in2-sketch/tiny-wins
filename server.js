@@ -65,6 +65,7 @@ function getLocalIpAddresses() {
 
 const app = express();
 app.use(express.json({ limit: '10mb' }));
+app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const server = http.createServer(app);
