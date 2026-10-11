@@ -494,6 +494,8 @@ function renderModal() {
         <button data-a="change-room">Save</button>
       </div>
 
+      <button class="pill danger" data-a="revoke-room" style="font-size:12px;padding:6px 14px;margin-bottom:12px;width:100%;justify-content:center" title="Disconnect any phone that scanned the old QR code">🔒 Disconnect Other Devices / Reset Key</button>
+
       <div class="device-tip">
         <b>📲 How to use as an app on your phone:</b><br>
         1. <b>Scan the QR code</b> with your phone's camera (or open the copied link).<br>
@@ -529,6 +531,36 @@ function addTask() {
   save();
   refocus = true;
   render();
+}
+
+async function revokeAndRegenerateRoom() {
+  if (!confirm('This will disconnect all other phones/devices that scanned your old QR code. You will need to re-scan the new QR code on your phone. Continue?')) {
+    return;
+  }
+  const oldRoom = currentRoomId;
+  const newRoom = 'tiny-' + Math.random().toString(36).slice(2, 8) + Math.random().toString(36).slice(2, 8);
+  
+  if (supabaseClient) {
+    // 1. Move tasks to new room
+    await supabaseClient.from('sync_rooms').upsert({
+      room_id: newRoom,
+      days: S.days,
+      weeks: S.weeks,
+      sender_id: clientId,
+      updated_at: new Date().toISOString()
+    });
+
+    // 2. Wipe old room so other devices see blank
+    await supabaseClient.from('sync_rooms').upsert({
+      room_id: oldRoom,
+      days: {},
+      weeks: {},
+      sender_id: clientId,
+      updated_at: new Date().toISOString()
+    });
+  }
+
+  switchRoom(newRoom);
 }
 
 document.addEventListener('keydown', e => {
@@ -599,6 +631,10 @@ document.addEventListener('click', e => {
   else if (a == 'change-room') {
     const input = document.getElementById('room-input');
     if (input) switchRoom(input.value);
+    return;
+  }
+  else if (a == 'revoke-room') {
+    revokeAndRegenerateRoom();
     return;
   }
   else if (a == 'install') {
