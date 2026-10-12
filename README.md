@@ -1,59 +1,40 @@
-# ✨ Tiny Wins - Real-Time Habit & Task Tracker (24/7 Cloud Sync)
+# Pantry · Kitchen Operating System
 
-**Tiny Wins** is a calm daily to-do list and weekly habit planner that stays synced across your phone and laptop **24/7 in real-time, even when your laptop is completely powered off**.
-
----
-
-## 🌐 Live Web & Mobile App (24/7 Online)
-
-👉 **[https://sha3in2-sketch.github.io/tiny-wins/](https://sha3in2-sketch.github.io/tiny-wins/)**
-
-- **Zero Auth Needed**: No accounts, emails, or passwords.
-- **Works 24/7**: Your phone syncs directly with the cloud database (Supabase), so it works when your laptop is shut down or when you are on mobile data outside.
-- **Installable PWA**: Can be installed directly to your phone's Home Screen and your laptop desktop.
+A production-quality, local-first, installable kitchen companion built with React 19, TypeScript, Tailwind CSS, Zustand, Dexie (IndexedDB), and Framer Motion.
 
 ---
 
-## 📱 How to Pair Your Phone & Laptop
+## Features
 
-1. Open **[https://sha3in2-sketch.github.io/tiny-wins/](https://sha3in2-sketch.github.io/tiny-wins/)** on your laptop.
-2. Click the **`📱 Phone`** button in the header.
-3. A **QR code** and pairing link will appear on your screen.
-4. **Scan the QR Code** with your phone's camera (or open the link on your phone).
-5. **Install on Phone**:
-   - **iPhone (Safari)**: Tap the **Share** button (square with arrow pointing up) ➔ scroll and tap **"Add to Home Screen"**.
-   - **Android (Chrome)**: Tap the menu (three dots) ➔ tap **"Install App"** or **"Add to Home screen"**.
-6. **Done!** Both devices are permanently paired to your private sync room. Any task you type or check on your phone will immediately show on your laptop, and vice-versa, anytime, anywhere.
+- **Local-First & Offline**: 100% of data lives in IndexedDB via Dexie. No remote server, no authentication needed. PWA-ready with offline service worker.
+- **Recipe Triaging**: Live calculations show which recipes are **Ready now**, which are **1–2 ingredients away**, and exact missing items.
+- **3D Flip Cards**: Smooth CSS 3D perspective cards with progress bars on the front, and missing-first interactive toggle chips on the back.
+- **Scalable Pantry**: Categorized collapsible shelves, sticky search with create-on-miss, 3-state item toggling (`have` / `low` / `out`), and collapsible staples.
+- **Cook Mode**: Fullscreen step-by-step cooking interface with Screen Wake Lock API and smart per-step timer parsing (e.g. `10 min`).
+- **Smart Shopping List**: Auto-aggregates from low/out items with one-click clipboard text export.
+- **Command Palette**: `Ctrl+K` / `Cmd+K` keyboard shortcut for jumping across tabs, recipes, and actions.
+- **Safe Backup & Restore**: JSON export/import with pre-import diff inspection to prevent silent overwriting.
 
 ---
 
-## 💻 Optional: Running Locally on Laptop
-
-If you ever wish to run the app offline on your laptop:
+## Quick Start
 
 ```bash
-npm start
+# 1. Install dependencies
+npm install
+
+# 2. Start local development server
+npm run dev
+
+# 3. Run test suite
+npm test
+
+# 4. Production build
+npm run build
 ```
-or double-click **`start.bat`**.
 
 ---
 
-## 🌟 Core Features
+## Seed Data & Recipes
 
-### 📅 Daily List
-- **Evening Routine**: Opens on **tomorrow** by default, making it natural to plan tomorrow's tasks each evening.
-- **Quick Navigation**: Jump to **Today**, **Tomorrow**, or use **‹ ›** arrows to browse any date.
-- **Progress Ring**: Animated circular ring showing current day's completion percentage.
-- **Habit Tracking**:
-  - **🔥 Day Streak** counter.
-  - **14-day completion average**.
-  - **Interactive 14-day history bar chart**: turns bright green on 100% perfect days. Tap any bar to open that day.
-
-### 📋 Weekly Planner
-- Always opens on the **current week**, with **today's column highlighted**.
-- 7-day Mon–Sun checkboxes for every habit or weekly task.
-- **★ Star Priority**: Tap the star to mark high priority. High-priority tasks stay pinned to the top with a pink accent.
-- **Overall Weekly Progress**: Live percentage bar.
-- **Reset Ticks**: Safety double-tap confirmation prevents accidental wiping.
-- **Copy Last Week's Tasks**: Convenient 1-click button when starting a fresh week.
-- **‹ › Arrows**: Browse previous or upcoming weeks anytime.
+The app comes seeded with **61 distinct recipes** parsed directly from the prototype into `src/db/seedRecipes.json`. On initial load, the Dexie database seeds these recipes and categorizes all **109 pantry items**.

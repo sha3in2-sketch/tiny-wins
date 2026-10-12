@@ -1,0 +1,837 @@
+[
+  {
+    "id": "seed-1",
+    "name": "Whole-Wheat Momos",
+    "category": "Snack",
+    "ingredients": [
+      "whole wheat flour",
+      "sesame oil",
+      "ginger",
+      "cabbage",
+      "carrots",
+      "olive oil",
+      "black pepper"
+    ],
+    "method": "Knead dough with sesame oil and salt. Sauté ginger, cabbage, carrots, pepper in olive oil. Fill, pleat, steam 10 min."
+  },
+  {
+    "id": "seed-2",
+    "name": "Thai Green Curry",
+    "category": "Dinner",
+    "ingredients": [
+      "coriander seeds",
+      "cumin seeds",
+      "cloves",
+      "peppercorns",
+      "lemongrass",
+      "ginger",
+      "green chili",
+      "onion",
+      "coriander leaves",
+      "lime leaves",
+      "lemon zest",
+      "jaggery powder",
+      "green capsicum",
+      "carrots",
+      "baby corn",
+      "broccoli",
+      "mushrooms",
+      "thick coconut milk",
+      "lemon juice",
+      "semi-brown rice"
+    ],
+    "method": "Dry roast spices, blend with aromatics into paste. Sauté veggies, add paste, salt, coconut milk, lemon juice. Serve with rice."
+  },
+  {
+    "id": "seed-3",
+    "name": "Whole-Wheat Pizza",
+    "category": "Dinner",
+    "ingredients": [
+      "whole wheat flour",
+      "olive oil",
+      "onion",
+      "tomatoes",
+      "cheese",
+      "green capsicum",
+      "mushrooms",
+      "paneer",
+      "oregano",
+      "chili flakes"
+    ],
+    "method": "Make dough, bake over salt bed in kadhai. Top with blended onion-tomato sauce, cheese, veggies, oregano, chili flakes. Bake 20 min."
+  },
+  {
+    "id": "seed-4",
+    "name": "Honey Chili Potato",
+    "category": "Snack",
+    "ingredients": [
+      "potatoes",
+      "gram flour (besan)",
+      "ginger",
+      "green chili",
+      "dried red chili",
+      "spring onion",
+      "onion",
+      "green capsicum",
+      "soy sauce",
+      "chili sauce",
+      "tomato ketchup",
+      "black pepper",
+      "sesame seeds",
+      "honey"
+    ],
+    "method": "Boil potatoes 90%, coat in besan, pan-fry. Sauté aromatics, add sauces, mix potatoes and sesame. Cool slightly, drizzle honey."
+  },
+  {
+    "id": "seed-5",
+    "name": "Paneer Tikka Curry",
+    "category": "Dinner",
+    "ingredients": [
+      "paneer",
+      "curd",
+      "cumin seeds",
+      "onion",
+      "asafoetida (hing)",
+      "turmeric powder",
+      "coriander powder",
+      "ginger",
+      "tomatoes",
+      "gram flour (besan)",
+      "garam masala",
+      "butter"
+    ],
+    "method": "Marinate paneer in curd and spices, roast. Sauté masala base, add roasted besan, water, garam masala, paneer. Finish with butter."
+  },
+  {
+    "id": "seed-6",
+    "name": "Palak Paneer Pulao",
+    "category": "Dinner",
+    "ingredients": [
+      "cumin seeds",
+      "onion",
+      "cloves",
+      "green chili",
+      "spinach (palak)",
+      "paneer",
+      "semi-brown rice"
+    ],
+    "method": "Sauté cumin, onion, whole spices, chili. Add spinach puree, paneer, soaked rice, water. Simmer until cooked."
+  },
+  {
+    "id": "seed-7",
+    "name": "Vegetable Kathi Roll",
+    "category": "Dinner",
+    "ingredients": [
+      "cumin seeds",
+      "onion",
+      "turmeric powder",
+      "black pepper",
+      "ginger",
+      "tomatoes",
+      "carrots",
+      "green capsicum",
+      "green beans",
+      "paneer",
+      "whole wheat chapati"
+    ],
+    "method": "Sauté cumin, onion, spices, ginger. Add veggies and paneer, cook 5 min. Wrap in chapati."
+  },
+  {
+    "id": "seed-8",
+    "name": "Vegetable Corn Soup",
+    "category": "Dinner",
+    "ingredients": [
+      "black pepper",
+      "ginger",
+      "carrots",
+      "green beans",
+      "green capsicum",
+      "green peas",
+      "corn",
+      "lemon juice",
+      "coriander leaves"
+    ],
+    "method": "Boil water with salt, pepper, ginger. Add veggies and grated corn, simmer 10 min. Garnish with lemon and coriander."
+  },
+  {
+    "id": "seed-9",
+    "name": "Soya Biryani",
+    "category": "Dinner",
+    "ingredients": [
+      "cloves",
+      "onion",
+      "ginger",
+      "tomatoes",
+      "soya chunks",
+      "mint leaves",
+      "coriander leaves",
+      "semi-brown rice"
+    ],
+    "method": "Sauté whole spices, onion, ginger, tomato. Add soaked soya, herbs, soaked rice, water. Cook low 15 min."
+  },
+  {
+    "id": "seed-10",
+    "name": "Dal Dhokli",
+    "category": "Dinner",
+    "ingredients": [
+      "whole wheat flour",
+      "gram flour (besan)",
+      "cumin seeds",
+      "asafoetida (hing)",
+      "tomatoes",
+      "mixed dal"
+    ],
+    "method": "Make dough. Sauté cumin, hing, spices, tomato. Add dal and water, simmer. Drop cut dough pieces in, cook 20-25 min."
+  },
+  {
+    "id": "seed-11",
+    "name": "Millet Masala Khichdi",
+    "category": "Dinner",
+    "ingredients": [
+      "cumin seeds",
+      "onion",
+      "green beans",
+      "tomatoes",
+      "millets (various)",
+      "green moong dal",
+      "cow ghee",
+      "coriander leaves"
+    ],
+    "method": "Sauté cumin, onion, spices, beans, tomato. Add soaked millets, moong dal, water. Simmer 15-20 min. Garnish with ghee."
+  },
+  {
+    "id": "seed-12",
+    "name": "Healthy Oats Pizza",
+    "category": "Dinner",
+    "ingredients": [
+      "oat flour",
+      "semolina (sooji/rava)",
+      "onion",
+      "tomatoes",
+      "cheese",
+      "green capsicum",
+      "oregano"
+    ],
+    "method": "Make batter with oat flour and semolina, spread like pancake. Top with sauce, veggies, cheese. Cover and cook until cheese melts."
+  },
+  {
+    "id": "seed-13",
+    "name": "Beans Pulao",
+    "category": "Lunch",
+    "ingredients": [
+      "kidney beans (rajma)",
+      "chickpeas (chana)",
+      "black chana",
+      "brown rice",
+      "coriander leaves",
+      "cumin seeds"
+    ],
+    "method": "Sauté spices, soaked beans and chickpeas. Add soaked brown rice, water. Cook 30 min. Garnish with coriander."
+  },
+  {
+    "id": "seed-14",
+    "name": "Paneer Capsicum Roll",
+    "category": "Lunch",
+    "ingredients": [
+      "cumin seeds",
+      "tomatoes",
+      "green capsicum",
+      "paneer",
+      "curd",
+      "tomato ketchup",
+      "whole wheat chapati"
+    ],
+    "method": "Sauté spices, tomato, capsicum, paneer 5 min. Add curd and ketchup. Fill chapati and roll."
+  },
+  {
+    "id": "seed-15",
+    "name": "Veggie Sweet Potato",
+    "category": "Lunch",
+    "ingredients": [
+      "mustard seeds",
+      "onion",
+      "sweet potatoes",
+      "carrots",
+      "green peas",
+      "tamarind",
+      "curd"
+    ],
+    "method": "Sauté seeds, onion, spices, diced sweet potato, veggies 10-15 min. Add tamarind water. Serve with curd."
+  },
+  {
+    "id": "seed-16",
+    "name": "Cabbage Sandwich",
+    "category": "Lunch",
+    "ingredients": [
+      "cabbage",
+      "curd",
+      "black pepper",
+      "atta bread slices"
+    ],
+    "method": "Mix chopped cabbage, curd (or malai), pepper, salt. Sandwich between whole wheat bread."
+  },
+  {
+    "id": "seed-17",
+    "name": "Millet Soya Biryani",
+    "category": "Lunch",
+    "ingredients": [
+      "onion",
+      "tomatoes",
+      "curd",
+      "soya chunks",
+      "mint leaves",
+      "coriander leaves",
+      "millets (various)"
+    ],
+    "method": "Sauté spices, onion, tomato, curd. Add soaked soya, herbs, water, soaked millets. Cook 15-20 min."
+  },
+  {
+    "id": "seed-18",
+    "name": "Masala Khichdi",
+    "category": "Lunch",
+    "ingredients": [
+      "cumin seeds",
+      "onion",
+      "tomatoes",
+      "green peas",
+      "semi-brown rice",
+      "moong dal (split/sprouted)",
+      "cow ghee"
+    ],
+    "method": "Sauté cumin, onion, spices, veggies, tomato. Add soaked rice and moong dal. Cook 15 min. Garnish with ghee."
+  },
+  {
+    "id": "seed-19",
+    "name": "Pasta with Chickpeas & Spinach",
+    "category": "Lunch",
+    "ingredients": [
+      "durum wheat pasta",
+      "ginger",
+      "spinach (palak)",
+      "tomatoes",
+      "chickpeas (chana)"
+    ],
+    "method": "Boil pasta. Sauté ginger, spinach, tomato, spices. Add boiled chickpeas and pasta."
+  },
+  {
+    "id": "seed-20",
+    "name": "Besan Ka Chila",
+    "category": "Breakfast",
+    "ingredients": [
+      "gram flour (besan)",
+      "onion",
+      "tomatoes",
+      "mustard oil"
+    ],
+    "method": "Mix besan, water, veggies, spices into batter. Cook on pan with mustard oil until golden."
+  },
+  {
+    "id": "seed-21",
+    "name": "Tamarind Rice",
+    "category": "Breakfast",
+    "ingredients": [
+      "mustard seeds",
+      "curry leaves",
+      "peanuts (roasted peanuts)",
+      "tamarind",
+      "brown rice"
+    ],
+    "method": "Temper mustard, curry leaves, peanuts, spices. Add tamarind water, cook to a paste. Mix with boiled rice."
+  },
+  {
+    "id": "seed-22",
+    "name": "Almond Banana Milk",
+    "category": "Drink",
+    "ingredients": [
+      "almonds",
+      "bananas",
+      "milk (cow's milk)"
+    ],
+    "method": "Blend almonds, bananas and warm milk."
+  },
+  {
+    "id": "seed-23",
+    "name": "Instant Masala Idli",
+    "category": "Breakfast",
+    "ingredients": [
+      "semolina (sooji/rava)",
+      "baking soda",
+      "lemon juice",
+      "mustard seeds",
+      "onion",
+      "carrots"
+    ],
+    "method": "Mix sooji, salt, water, baking soda, lemon juice. Steam 15 min. Toss in pan with tempered spices and veggies."
+  },
+  {
+    "id": "seed-24",
+    "name": "Sattu Paratha",
+    "category": "Breakfast",
+    "ingredients": [
+      "whole wheat flour (atta)",
+      "chana sattu",
+      "mustard oil",
+      "lemon juice"
+    ],
+    "method": "Knead dough. Mix sattu, spices, mustard oil, lemon juice for stuffing. Roll and roast."
+  },
+  {
+    "id": "seed-25",
+    "name": "Paneer Bhurji Sandwich",
+    "category": "Breakfast",
+    "ingredients": [
+      "tomatoes",
+      "paneer",
+      "atta bread slices",
+      "cow ghee",
+      "onion"
+    ],
+    "method": "Sauté spices, tomato, fresh paneer. Sandwich in bread and toast with ghee."
+  },
+  {
+    "id": "seed-26",
+    "name": "Red Rice Poha",
+    "category": "Breakfast",
+    "ingredients": [
+      "red rice poha",
+      "mustard seeds",
+      "peanuts (roasted peanuts)",
+      "lemon juice",
+      "desi khand",
+      "carrots"
+    ],
+    "method": "Wash poha. Temper mustard, peanuts, veggies. Add poha, lemon juice, desi khand. Cook 2-3 min."
+  },
+  {
+    "id": "seed-27",
+    "name": "Banana Oat Smoothie",
+    "category": "Breakfast",
+    "ingredients": [
+      "rolled oats",
+      "cashews",
+      "bananas",
+      "cinnamon stick/powder",
+      "roasted chicory powder"
+    ],
+    "method": "Blend soaked oats, soaked cashews, ripe bananas, cinnamon, chicory powder."
+  },
+  {
+    "id": "seed-28",
+    "name": "Instant Millet Dosa",
+    "category": "Breakfast",
+    "ingredients": [
+      "foxtail millet",
+      "mixed dal",
+      "baking soda",
+      "peanuts (roasted peanuts)"
+    ],
+    "method": "Blend overnight-soaked millet, dals, spices. Add baking soda. Cook on cast iron tawa. Serve with peanut chutney."
+  },
+  {
+    "id": "seed-29",
+    "name": "Moong Sprout Chaat",
+    "category": "Snack",
+    "ingredients": [
+      "moong dal (split/sprouted)",
+      "onion",
+      "tomatoes",
+      "cucumber",
+      "lemon juice",
+      "cold-pressed sesame oil"
+    ],
+    "method": "Mix sprouts with veggies, spices, lemon juice and sesame oil."
+  },
+  {
+    "id": "seed-30",
+    "name": "Golden Spice Milk",
+    "category": "Drink",
+    "ingredients": [
+      "milk (cow's milk)",
+      "turmeric powder",
+      "green cardamom",
+      "cinnamon stick/powder",
+      "cloves",
+      "black pepper"
+    ],
+    "method": "Boil milk with turmeric, cardamom, cinnamon, cloves, pepper."
+  },
+  {
+    "id": "seed-31",
+    "name": "Chocolate Milk",
+    "category": "Drink",
+    "ingredients": [
+      "milk (cow's milk)",
+      "unsweetened cocoa powder"
+    ],
+    "method": "Mix warm milk with unsweetened cocoa."
+  },
+  {
+    "id": "seed-32",
+    "name": "Chuare Milk",
+    "category": "Drink",
+    "ingredients": [
+      "milk (cow's milk)",
+      "chuare (dry dates)"
+    ],
+    "method": "Boil milk with dry dates."
+  },
+  {
+    "id": "seed-33",
+    "name": "Peanut Papad Chaat",
+    "category": "Snack",
+    "ingredients": [
+      "papad",
+      "onion",
+      "tomatoes",
+      "cucumber",
+      "peanuts (roasted peanuts)",
+      "paneer",
+      "chaat masala",
+      "lemon juice"
+    ],
+    "method": "Top roasted papad with veggies, peanuts, paneer, chaat masala, lemon juice."
+  },
+  {
+    "id": "seed-34",
+    "name": "Masala Bread",
+    "category": "Snack",
+    "ingredients": [
+      "onion",
+      "tomatoes",
+      "pav bhaji masala",
+      "atta bread slices"
+    ],
+    "method": "Sauté veggies and pav bhaji masala. Toss with diced bread."
+  },
+  {
+    "id": "seed-35",
+    "name": "Aloo Chana Chaat",
+    "category": "Snack",
+    "ingredients": [
+      "chickpeas (chana)",
+      "potatoes",
+      "curd",
+      "tomato ketchup",
+      "chaat masala"
+    ],
+    "method": "Mix boiled chickpeas, potato, curd, ketchup, spices."
+  },
+  {
+    "id": "seed-36",
+    "name": "Mix Veg Pulao",
+    "category": "Lunch",
+    "ingredients": [
+      "carrots",
+      "green peas",
+      "green beans",
+      "paneer",
+      "semi-brown rice",
+      "cumin seeds"
+    ],
+    "method": "Sauté veggies, paneer, spices. Mix with rice and water. Cook until done."
+  },
+  {
+    "id": "seed-37",
+    "name": "Dal Bhel",
+    "category": "Snack",
+    "ingredients": [
+      "mixed dal",
+      "semi-brown rice",
+      "onion",
+      "tomatoes",
+      "peanuts (roasted peanuts)",
+      "chaat masala"
+    ],
+    "method": "Mix leftover dal with rice, veggies, peanuts, chaat masala."
+  },
+  {
+    "id": "seed-38",
+    "name": "Paneer Popcorn",
+    "category": "Snack",
+    "ingredients": [
+      "paneer",
+      "gram flour (besan)",
+      "semolina (sooji/rava)",
+      "mustard oil"
+    ],
+    "method": "Marinate paneer. Coat in besan batter then semolina. Shallow fry in mustard oil."
+  },
+  {
+    "id": "seed-39",
+    "name": "No Coffee Cold Coffee",
+    "category": "Drink",
+    "ingredients": [
+      "black chana",
+      "milk (cow's milk)",
+      "jaggery powder"
+    ],
+    "method": "Dry roast chickpeas to dark brown, grind. Blend with chilled milk and jaggery."
+  },
+  {
+    "id": "seed-40",
+    "name": "Naan Khatai",
+    "category": "Dessert",
+    "ingredients": [
+      "whole wheat flour",
+      "gram flour (besan)",
+      "cow ghee",
+      "jaggery powder",
+      "baking powder",
+      "green cardamom"
+    ],
+    "method": "Mix everything, shape, bake over salt in kadhai 10 min."
+  },
+  {
+    "id": "seed-41",
+    "name": "Banana Peanut Butter Ice Cream",
+    "category": "Dessert",
+    "ingredients": [
+      "bananas",
+      "jaggery powder",
+      "peanut butter"
+    ],
+    "method": "Blend frozen ripe bananas with jaggery and peanut butter. Freeze 1 hour."
+  },
+  {
+    "id": "seed-42",
+    "name": "Katori Cake",
+    "category": "Dessert",
+    "ingredients": [
+      "whole wheat flour",
+      "jaggery powder",
+      "cocoa powder",
+      "baking powder",
+      "cow ghee",
+      "milk (cow's milk)",
+      "crushed dry fruits"
+    ],
+    "method": "Blend batter, pour into katori, top with dry fruits. Bake over salt 40 min."
+  },
+  {
+    "id": "seed-43",
+    "name": "Atte ka Halwa",
+    "category": "Dessert",
+    "ingredients": [
+      "whole wheat flour",
+      "cow ghee",
+      "jaggery powder"
+    ],
+    "method": "Roast flour in ghee until brown. Mix in warm jaggery water until ghee separates."
+  },
+  {
+    "id": "seed-44",
+    "name": "Gajar ka Halwa",
+    "category": "Dessert",
+    "ingredients": [
+      "carrots",
+      "cow ghee",
+      "green cardamom",
+      "cashews",
+      "milk (cow's milk)",
+      "jaggery powder"
+    ],
+    "method": "Sauté grated carrots in ghee with cardamom, cashews. Add milk, simmer 15-20 min. Mix in jaggery."
+  },
+  {
+    "id": "seed-45",
+    "name": "Walnut Delight",
+    "category": "Dessert",
+    "ingredients": [
+      "curd",
+      "walnuts",
+      "dates",
+      "honey"
+    ],
+    "method": "Mix beaten curd, crushed walnuts, chopped dates, honey. Chill."
+  },
+  {
+    "id": "seed-46",
+    "name": "Sweet Potato Halwa",
+    "category": "Dessert",
+    "ingredients": [
+      "sweet potatoes",
+      "jaggery powder",
+      "cow ghee"
+    ],
+    "method": "Mash boiled sweet potatoes. Mix with warm jaggery syrup and a teaspoon of ghee."
+  },
+  {
+    "id": "seed-47",
+    "name": "Healthy Kheer",
+    "category": "Dessert",
+    "ingredients": [
+      "milk (cow's milk)",
+      "semi-brown rice",
+      "saffron threads",
+      "desi khand",
+      "green cardamom",
+      "crushed dry fruits"
+    ],
+    "method": "Simmer milk with soaked rice and saffron until thick. Add khand, cardamom, dry fruits."
+  },
+  {
+    "id": "seed-48",
+    "name": "Hostler's Delight (Churi)",
+    "category": "Dessert",
+    "ingredients": [
+      "cow ghee",
+      "jaggery powder",
+      "whole wheat chapati"
+    ],
+    "method": "Spread ghee and jaggery on warm chapati, roll, eat."
+  },
+  {
+    "id": "seed-49",
+    "name": "Coconut Laddoo",
+    "category": "Dessert",
+    "ingredients": [
+      "coconut sugar",
+      "grated coconut"
+    ],
+    "method": "Make thick syrup of coconut sugar and water. Mix with grated coconut, cool, roll into balls."
+  },
+  {
+    "id": "seed-50",
+    "name": "Sattu Sherbet",
+    "category": "Drink",
+    "ingredients": [
+      "chana sattu",
+      "black salt",
+      "lemon juice"
+    ],
+    "method": "Mix sattu, water, black salt, lemon juice."
+  },
+  {
+    "id": "seed-51",
+    "name": "Gond Shikanji",
+    "category": "Drink",
+    "ingredients": [
+      "gond katira (edible gum)",
+      "mishri powder",
+      "lemon juice",
+      "black pepper",
+      "black salt"
+    ],
+    "method": "Soak gond. Mix water, mishri, lemon, pepper, black salt and gond."
+  },
+  {
+    "id": "seed-52",
+    "name": "Cucumber Cooler",
+    "category": "Drink",
+    "ingredients": [
+      "cucumber",
+      "lemon juice",
+      "black salt",
+      "roasted cumin powder (jeera powder)"
+    ],
+    "method": "Blend everything with water."
+  },
+  {
+    "id": "seed-53",
+    "name": "Kacchi Lassi",
+    "category": "Drink",
+    "ingredients": [
+      "milk (cow's milk)",
+      "mishri powder"
+    ],
+    "method": "Mix 30-40ml milk with mishri and water."
+  },
+  {
+    "id": "seed-54",
+    "name": "Watermelon Mint Cooler",
+    "category": "Drink",
+    "ingredients": [
+      "watermelon",
+      "mint leaves"
+    ],
+    "method": "Blend diced watermelon with mint."
+  },
+  {
+    "id": "seed-55",
+    "name": "Jaljeera",
+    "category": "Drink",
+    "ingredients": [
+      "mint leaves",
+      "roasted cumin powder (jeera powder)",
+      "black salt",
+      "rock salt",
+      "black pepper",
+      "asafoetida (hing)",
+      "jaggery powder",
+      "lemon juice"
+    ],
+    "method": "Blend mint, spices, salts, hing, water. Mix into jaggery and lemon water."
+  },
+  {
+    "id": "seed-56",
+    "name": "Bael Sherbet",
+    "category": "Drink",
+    "ingredients": [
+      "bael fruit",
+      "jaggery powder"
+    ],
+    "method": "Extract bael pulp, mix with water, strain. Sweeten with jaggery."
+  },
+  {
+    "id": "seed-57",
+    "name": "Ragi Malt",
+    "category": "Drink",
+    "ingredients": [
+      "ragi flour",
+      "lemon juice",
+      "curd"
+    ],
+    "method": "Make ragi paste with water. Boil with water and salt. Cool, mix in lemon juice and curd."
+  },
+  {
+    "id": "seed-58",
+    "name": "Turmeric Milk",
+    "category": "Drink",
+    "ingredients": [
+      "milk (cow's milk)",
+      "turmeric powder",
+      "black pepper",
+      "cow ghee"
+    ],
+    "method": "Boil milk with turmeric, pepper and ghee."
+  },
+  {
+    "id": "seed-59",
+    "name": "Buttermilk (Chaas)",
+    "category": "Drink",
+    "ingredients": [
+      "coriander leaves",
+      "mint leaves",
+      "ginger",
+      "curd",
+      "asafoetida (hing)",
+      "rock salt",
+      "black salt",
+      "cow ghee",
+      "cumin seeds",
+      "curry leaves"
+    ],
+    "method": "Blend herbs, ginger, curd, hing, salts, water. Temper with ghee, cumin, curry leaves."
+  },
+  {
+    "id": "seed-60",
+    "name": "Lemon Honey Water",
+    "category": "Drink",
+    "ingredients": [
+      "lemon juice",
+      "honey"
+    ],
+    "method": "Mix lukewarm water, lemon juice, honey."
+  },
+  {
+    "id": "seed-61",
+    "name": "Carrot Milk",
+    "category": "Drink",
+    "ingredients": [
+      "carrots",
+      "milk (cow's milk)",
+      "honey"
+    ],
+    "method": "Boil grated carrots in water, add milk, boil until water evaporates. Sweeten with honey/jaggery."
+  }
+]

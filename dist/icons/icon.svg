@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b7cf6"/>
+      <stop offset="100%" stop-color="#6d5be4"/>
+    </linearGradient>
+    <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe066"/>
+      <stop offset="100%" stop-color="#ffb72b"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#2b2850" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Background rounded rectangle -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)"/>
+
+  <!-- Golden rotated badge with shadow -->
+  <g transform="translate(256,256) rotate(-8) translate(-140,-140)" filter="url(#shadow)">
+    <rect width="280" height="280" rx="76" fill="url(#sunGrad)"/>
+    
+    <!-- Sparkle 1 (Large center) -->
+    <path d="M 140 45 C 140 100 185 140 235 140 C 185 140 140 180 140 235 C 140 180 95 140 45 140 C 95 140 140 100 140 45 Z" fill="#ffffff" />
+    <path d="M 140 65 C 140 110 175 140 215 140 C 175 140 140 170 140 215 C 140 170 105 140 65 140 C 105 140 140 110 140 65 Z" fill="#fff7d6" opacity="0.8"/>
+
+    <!-- Sparkle 2 (Small top right) -->
+    <path d="M 215 45 C 215 65 230 75 245 75 C 230 75 215 85 215 105 C 215 85 200 75 185 75 C 200 75 215 65 215 45 Z" fill="#ffffff" opacity="0.9"/>
+  </g>
+</svg>
