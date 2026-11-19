@@ -1,6 +1,7 @@
 /* ==========================================================================
    TINYWINS OS — 24/7 SUPABASE CLOUD SYNC
    ========================================================================== */
+import { decryptData, encryptData, generateSecureRoomToken } from "./crypto.js";
 import { getRoomId, STATE, saveState, setRoomId } from "./store.js";
 import { debounce } from "./utils/debounce.js";
 
@@ -67,23 +68,27 @@ export async function syncWithCloud() {
 			console.error("Fetch room error:", error);
 			updateStatus("offline");
 		} else if (data) {
+			const decryptedDays = (await decryptData(data.days, currentRoomId)) || {};
+			const decryptedWeeks =
+				(await decryptData(data.weeks, currentRoomId)) || {};
+
 			const cloudHasTasks =
-				(data.days && Object.keys(data.days).length > 0) ||
-				(data.weeks && Object.keys(data.weeks).length > 0);
+				Object.keys(decryptedDays).length > 0 ||
+				Object.keys(decryptedWeeks).length > 0;
 			const localHasTasks =
-				(STATE.days && Object.keys(STATE.days).length > 0) ||
-				(STATE.weeks && Object.keys(STATE.weeks).length > 0);
+				Object.keys(STATE.days).length > 0 ||
+				Object.keys(STATE.weeks).length > 0;
 
 			if (cloudHasTasks || !localHasTasks) {
-				Object.assign(STATE.days, data.days || {});
-				Object.assign(STATE.weeks, data.weeks || {});
+				Object.assign(STATE.days, decryptedDays);
+				Object.assign(STATE.weeks, decryptedWeeks);
 				saveState();
 			} else if (localHasTasks && !cloudHasTasks) {
 				pushStateToCloud();
 			}
 			updateStatus("connected");
 		} else {
-			// Room doesn't exist yet in cloud -> initialize it
+			// Room doesn't exist yet in cloud -> initialize it with encrypted payload
 			pushStateToCloud();
 			updateStatus("connected");
 		}
@@ -103,12 +108,16 @@ export async function syncWithCloud() {
 					table: "sync_rooms",
 					filter: `room_id=eq.${currentRoomId}`,
 				},
-				(payload) => {
+				async (payload) => {
 					const newRow = payload.new;
 					if (newRow && newRow.sender_id !== clientId) {
-						Object.assign(STATE.days, newRow.days || {});
-						Object.assign(STATE.weeks, newRow.weeks || {});
-						saveState();
+						const decDays = await decryptData(newRow.days, currentRoomId);
+						const decWeeks = await decryptData(newRow.weeks, currentRoomId);
+						if (decDays && decWeeks) {
+							Object.assign(STATE.days, decDays);
+							Object.assign(STATE.weeks, decWeeks);
+							saveState();
+						}
 					}
 				},
 			)
@@ -125,16 +134,19 @@ export async function syncWithCloud() {
 	}
 }
 
-// Push local state to Cloud
+// Push local state to Cloud (Encrypted with AES-256-GCM using Room Key)
 export async function pushStateToCloud() {
 	if (!supabaseClient) return;
 	const currentRoomId = getRoomId();
 	try {
 		updateStatus("syncing");
+		const encDays = await encryptData(STATE.days, currentRoomId);
+		const encWeeks = await encryptData(STATE.weeks, currentRoomId);
+
 		await supabaseClient.from("sync_rooms").upsert({
 			room_id: currentRoomId,
-			days: STATE.days,
-			weeks: STATE.weeks,
+			days: encDays,
+			weeks: encWeeks,
 			sender_id: clientId,
 			updated_at: new Date().toISOString(),
 		});
@@ -157,30 +169,18 @@ export function switchRoom(newRoomId) {
 // Revoke access from other devices by rotating room code
 export async function revokeAndRegenerateRoom() {
 	const currentRoomId = getRoomId();
-	const newRoomId =
-		"tiny-" +
-		Math.random().toString(36).slice(2, 8) +
-		Math.random().toString(36).slice(2, 8);
+	const newRoomId = generateSecureRoomToken();
 
 	if (supabaseClient) {
-		// 1. Move tasks to new room
-		await supabaseClient.from("sync_rooms").upsert({
-			room_id: newRoomId,
-			days: STATE.days,
-			weeks: STATE.weeks,
-			sender_id: clientId,
-			updated_at: new Date().toISOString(),
-		});
-
-		// 2. Wipe old room so other devices see blank
-		await supabaseClient.from("sync_rooms").upsert({
-			room_id: currentRoomId,
-			days: {},
-			weeks: {},
-			sender_id: clientId,
-			updated_at: new Date().toISOString(),
-		});
+		// 1. Wipe old room completely from Supabase so previous devices see nothing
+		try {
+			await supabaseClient
+				.from("sync_rooms")
+				.delete()
+				.eq("room_id", currentRoomId);
+		} catch (_e) {}
 	}
 
 	switchRoom(newRoomId);
+	await pushStateToCloud();
 }

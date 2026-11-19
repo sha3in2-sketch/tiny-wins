@@ -1,15 +1,14 @@
 {
-  "name": "pantry-app",
+  "name": "tiny-wins",
+  "version": "2.0.0",
+  "description": "Tiny Wins OS — God-Level Personal Productivity, Calendar & Habit Engine",
   "private": true,
-  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "start": "node serve.js",
+    "dev": "node serve.js",
+    "format": "biome check --write public/app app",
+    "audit": "semgrep scan --config auto public/app app"
   },
   "dependencies": {
     "clsx": "^2.1.1",

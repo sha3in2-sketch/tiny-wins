@@ -1,6 +1,7 @@
 /* ==========================================================================
    TINYWINS OS — CENTRAL STORE
    ========================================================================== */
+import { generateSecureRoomToken } from "./crypto.js";
 import { add, key, mon, today } from "./utils/date.js";
 
 export const OLD_STORAGE_KEY = "tinywins.v1";
@@ -177,7 +178,7 @@ export function getRoomId() {
 	}
 	let saved = localStorage.getItem(ROOM_KEY);
 	if (!saved) {
-		saved = `tiny-${Math.random().toString(36).slice(2, 9)}`;
+		saved = generateSecureRoomToken();
 		localStorage.setItem(ROOM_KEY, saved);
 	}
 	return saved;
