@@ -327,11 +327,9 @@
 /* Sub-Slot Blocks Structure */
 .time-block {
 	position: absolute;
-	left: 4px;
-	right: 4px;
 	border-radius: 9px;
-	padding: 4px 8px;
-	font-size: 12px;
+	padding: 4px 7px;
+	font-size: 11.5px;
 	font-weight: 600;
 	color: #fff;
 	background: #4a90e2;
@@ -342,12 +340,13 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 6px;
+	gap: 4px;
 	transition:
 		transform 0.12s ease,
 		box-shadow 0.12s ease,
 		opacity 0.2s ease;
 	user-select: none;
+	box-sizing: border-box;
 }
 
 .time-block:hover {
@@ -506,6 +505,238 @@
 	border-radius: 50%;
 	background: #ff4757;
 	box-shadow: 0 0 6px rgba(255, 71, 87, 0.8);
+}
+
+/* ==========================================================================
+   NOTION CALENDAR WORKSPACE & UNSCHEDULED SIDECAR TRAY
+   ========================================================================== */
+.calendar-workspace {
+	display: flex;
+	gap: 16px;
+	align-items: flex-start;
+	width: 100%;
+	position: relative;
+}
+
+.calendar-main-pane {
+	flex: 1;
+	min-width: 0;
+	width: 100%;
+}
+
+.calendar-sidecar {
+	width: 290px;
+	flex: none;
+	background: var(--surface-raised);
+	border: 1.5px solid var(--line);
+	border-radius: var(--radius-card);
+	padding: 14px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	max-height: 680px;
+	box-shadow: var(--shadow-sm);
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sidecar-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-bottom: 8px;
+	border-bottom: 1.5px solid var(--line);
+}
+
+.sidecar-close-btn {
+	background: transparent;
+	border: 0;
+	font-size: 18px;
+	color: var(--mute);
+	cursor: pointer;
+	padding: 2px 6px;
+	border-radius: 6px;
+}
+
+.sidecar-close-btn:hover {
+	color: var(--ink);
+	background: rgba(0, 0, 0, 0.05);
+}
+
+.sidecar-input-wrap {
+	display: flex;
+	gap: 6px;
+}
+
+.sidecar-list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	overflow-y: auto;
+	max-height: 520px;
+	padding-right: 2px;
+}
+
+.sidecar-card {
+	background: #ffffff;
+	border: 1.5px solid var(--line);
+	border-radius: 12px;
+	padding: 10px 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+	transition:
+		transform 0.15s ease,
+		border-color 0.15s ease;
+}
+
+.sidecar-card:hover {
+	border-color: var(--p);
+	transform: translateY(-1px);
+}
+
+.sidecar-card.high-priority {
+	border-left: 3.5px solid var(--pink);
+}
+
+.sidecar-card-top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.sidecar-est-pill {
+	font-size: 10px;
+	font-weight: 700;
+	color: var(--mute);
+	background: var(--bg);
+	padding: 1px 6px;
+	border-radius: 6px;
+}
+
+.sidecar-card-title {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--ink);
+	line-height: 1.35;
+	word-break: break-word;
+}
+
+.sidecar-card-meta {
+	font-size: 11px;
+	color: var(--mute);
+	font-weight: 500;
+}
+
+.sidecar-card-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 4px;
+	padding-top: 6px;
+	border-top: 1px dashed var(--line);
+}
+
+button.sidecar-schedule-btn {
+	padding: 3px 10px;
+	font-size: 11px;
+	font-weight: 700;
+	border-radius: 8px;
+}
+
+.sidecar-del-btn {
+	background: transparent;
+	border: 0;
+	color: var(--mute);
+	font-size: 16px;
+	cursor: pointer;
+	padding: 0 4px;
+}
+
+.sidecar-del-btn:hover {
+	color: var(--pink);
+}
+
+.sidecar-empty {
+	text-align: center;
+	padding: 24px 8px;
+	font-size: 12px;
+	color: var(--mute);
+	line-height: 1.5;
+}
+
+/* Source Chips */
+.source-chip {
+	font-size: 10px;
+	font-weight: 700;
+	padding: 1px 6px;
+	border-radius: 6px;
+	display: inline-flex;
+	align-items: center;
+	gap: 3px;
+}
+
+.source-chip.gmail {
+	background: #fef2f2;
+	color: #dc2626;
+	border: 1px solid #fecaca;
+}
+
+.source-chip.gcal {
+	background: #eff6ff;
+	color: #2563eb;
+	border: 1px solid #bfdbfe;
+}
+
+.source-chip.manual {
+	background: var(--pl);
+	color: var(--p);
+}
+
+/* Command Palette Items */
+.palette-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	padding: 9px 12px;
+	border-radius: 10px;
+	background: transparent;
+	border: 0;
+	cursor: pointer;
+	font-size: 13.5px;
+	font-weight: 600;
+	color: var(--ink);
+	text-align: left;
+	transition:
+		background 0.12s ease,
+		color 0.12s ease;
+}
+
+.palette-item:hover {
+	background: var(--surface-raised);
+	color: var(--p);
+}
+
+.kbd-badge {
+	font-family: inherit;
+	font-size: 11px;
+	font-weight: 700;
+	background: var(--bg);
+	border: 1px solid var(--line);
+	border-radius: 6px;
+	padding: 2px 7px;
+	color: var(--mute);
+}
+
+@media (max-width: 900px) {
+	.calendar-workspace {
+		flex-direction: column;
+	}
+	.calendar-sidecar {
+		width: 100%;
+		max-height: none;
+	}
 }
 
 @media (max-width: 720px) {

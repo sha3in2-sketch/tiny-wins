@@ -39,11 +39,12 @@ export function renderTodayView() {
           <h2>${L(dt(selDate), { weekday: "long", day: "numeric", month: "long" })}</h2>
           <span class="chip ${rel(selDate) === "Today" ? "sun" : "mint"}">${rel(selDate) || "Selected Day"}</span>
         </div>
-        <div style="display:flex;gap:8px;align-items:center">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           <button class="rnd-btn" data-action="prev-day" aria-label="Previous day">‹</button>
           <button class="pill ${selDate === today() ? "active" : ""}" data-action="go-today">Today</button>
           <button class="pill ${selDate === key(add(new Date(), 1)) ? "active" : ""}" data-action="go-tomorrow">Tomorrow</button>
           <button class="rnd-btn" data-action="next-day" aria-label="Next day">›</button>
+          <button class="pill secondary" data-action="open-retrospective" title="Daily Wins Retrospective">🏆 Wins</button>
         </div>
       </div>
 
@@ -62,7 +63,7 @@ export function renderTodayView() {
           <b>${Math.round(progressRatio * 100)}%</b>
         </div>
         <div>
-          <p class="motivational-msg">${motivationalMsg}</p>
+          <p class="motivational-msg">${doneCount >= 3 ? "🔥 <b>Hat Trick Win!</b> " : ""}${motivationalMsg}</p>
           <div class="stats-grid">
             <div class="stat-card">
               <b>${doneCount}/${totalCount}</b>

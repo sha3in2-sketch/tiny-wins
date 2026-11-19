@@ -618,10 +618,156 @@ document.addEventListener("click", async (e) => {
 		}
 		return;
 	}
+
+	// --- Notion-Style Unscheduled Backlog Tray & Sidecar Actions ---
+	if (action === "toggle-sidecar") {
+		STATE.ui.sidecarOpen = !STATE.ui.sidecarOpen;
+		renderApp();
+		return;
+	}
+
+	if (action === "open-command-palette") {
+		STATE.ui.showModal = "commandPalette";
+		renderApp();
+		return;
+	}
+
+	if (action === "open-retrospective") {
+		STATE.ui.showModal = "retrospective";
+		renderApp();
+		return;
+	}
+
+	if (action === "celebrate-and-plan") {
+		fireConfetti();
+		STATE.ui.sel = key(add(dt(STATE.ui.sel || today()), 1));
+		STATE.ui.showModal = null;
+		saveState();
+		renderApp();
+		showToast("🎉 Celebrated! Tomorrow planned.", "success");
+		return;
+	}
+
+	if (action === "add-inbox-item") {
+		const input = document.getElementById("sidecar-input");
+		const text = input ? input.value.trim() : "";
+		if (!text) return;
+		STATE.inbox = STATE.inbox || [];
+		STATE.inbox.push({
+			id: uid(),
+			t: text,
+			priority: "normal",
+			estimatedMinutes: 30,
+			type: "task",
+			source: { type: "manual" },
+			winScore: 1,
+		});
+		input.value = "";
+		saveState();
+		debouncedPush();
+		renderApp();
+		showToast(`Added "${text}" to Backlog 📥`, "success");
+		return;
+	}
+
+	if (action === "delete-inbox-item") {
+		STATE.inbox = (STATE.inbox || []).filter((x) => x.id !== id);
+		saveState();
+		debouncedPush();
+		renderApp();
+		return;
+	}
+
+	if (action === "schedule-inbox-item") {
+		const itemIndex = (STATE.inbox || []).findIndex((x) => x.id === id);
+		if (itemIndex >= 0) {
+			const item = STATE.inbox[itemIndex];
+			const targetDate = STATE.ui.sel || today();
+			STATE.days[targetDate] = STATE.days[targetDate] || [];
+
+			// Find next free daytime hour (between 9 AM and 8 PM)
+			const occupiedHours = new Set();
+			for (const t of STATE.days[targetDate]) {
+				if (t.time) {
+					const p = t.time.match(/(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+					if (p) {
+						let h = Number.parseInt(p[1], 10);
+						const m = p[3]?.toLowerCase();
+						if (m === "pm" && h < 12) h += 12;
+						if (m === "am" && h === 12) h = 0;
+						occupiedHours.add(h);
+					}
+				}
+			}
+
+			let slotHour = 9;
+			for (let h = 9; h <= 20; h++) {
+				if (!occupiedHours.has(h)) {
+					slotHour = h;
+					break;
+				}
+			}
+
+			const formattedTime = formatTimeLabel(slotHour, 0);
+
+			STATE.days[targetDate].push({
+				id: uid(),
+				t: item.t,
+				d: false,
+				priority: item.priority || "normal",
+				time: formattedTime,
+				duration: item.estimatedMinutes || 30,
+				type: item.type || "task",
+				source: item.source || { type: "manual" },
+				winScore: item.winScore || 1,
+				createdAt: new Date().toISOString(),
+			});
+
+			// Remove from inbox backlog
+			STATE.inbox.splice(itemIndex, 1);
+			saveState();
+			debouncedPush();
+			renderApp();
+			showToast(`⚡ Scheduled "${item.t}" at ${formattedTime}!`, "success");
+		}
+		return;
+	}
+
+	if (action === "palette-navigate") {
+		const tab = target.dataset.tab;
+		const calMode = target.dataset.cal;
+		STATE.ui.tab = tab;
+		if (calMode) STATE.ui.calView = calMode;
+		STATE.ui.showModal = null;
+		navigate(tab);
+		renderApp();
+		return;
+	}
+
+	if (action === "palette-action") {
+		const subaction = target.dataset.subaction;
+		STATE.ui.showModal = null;
+		if (subaction === "toggle-sidecar") {
+			STATE.ui.sidecarOpen = !STATE.ui.sidecarOpen;
+		} else if (subaction === "open-retrospective") {
+			STATE.ui.showModal = "retrospective";
+		} else if (subaction === "open-pairing") {
+			STATE.ui.showModal = "pairing";
+		}
+		renderApp();
+		return;
+	}
 });
 
-// 4. Enter Key Listener for Task Inputs
+// 4. Keyboard Shortcuts & Enter Listeners (Cron / Notion Calendar style)
 document.addEventListener("keydown", (e) => {
+	const isTyping =
+		e.target.tagName === "INPUT" ||
+		e.target.tagName === "TEXTAREA" ||
+		e.target.tagName === "SELECT" ||
+		e.target.isContentEditable;
+
+	// Enter Key Shortcuts inside input fields
 	if (e.key === "Enter") {
 		if (e.target.id === "today-task-input") {
 			const btn = document.querySelector('[data-action="add-today-task"]');
@@ -631,6 +777,9 @@ document.addEventListener("keydown", (e) => {
 			if (btn) btn.click();
 		} else if (e.target.id === "weekly-input") {
 			const btn = document.querySelector('[data-action="add-weekly-habit"]');
+			if (btn) btn.click();
+		} else if (e.target.id === "sidecar-input") {
+			const btn = document.querySelector('[data-action="add-inbox-item"]');
 			if (btn) btn.click();
 		} else if (e.target.id === "room-input-modal") {
 			const btn = document.querySelector('[data-action="change-room-code"]');
@@ -644,16 +793,60 @@ document.addEventListener("keydown", (e) => {
 		}
 	}
 
-	// Keyboard shortcut: Cmd/Ctrl + K to switch tabs or search
-	if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+	// Cmd/Ctrl + K opens Command Palette
+	if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
 		e.preventDefault();
-		navigate(STATE.ui.tab === "calendar" ? "today" : "calendar");
+		STATE.ui.showModal =
+			STATE.ui.showModal === "commandPalette" ? null : "commandPalette";
+		renderApp();
+		return;
 	}
 
 	// Escape closes open modals
 	if (e.key === "Escape") {
 		if (STATE.ui.showModal) {
 			STATE.ui.showModal = null;
+			renderApp();
+			return;
+		}
+	}
+
+	// Single-key navigation shortcuts (when not typing in an input)
+	if (!isTyping && !e.metaKey && !e.ctrlKey && !e.altKey) {
+		const k = e.key.toLowerCase();
+		if (k === "t") {
+			STATE.ui.sel = today();
+			STATE.ui.calYear = new Date().getFullYear();
+			STATE.ui.calMonth = new Date().getMonth();
+			renderApp();
+			showToast("📅 Jumped to Today", "info");
+		} else if (k === "w") {
+			STATE.ui.tab = "calendar";
+			STATE.ui.calView = "timegrid";
+			navigate("calendar");
+			renderApp();
+			showToast("⏱️ Week Time-Grid", "info");
+		} else if (k === "d") {
+			STATE.ui.tab = "calendar";
+			STATE.ui.calView = "daygrid";
+			navigate("calendar");
+			renderApp();
+			showToast("📅 Single Day Planner", "info");
+		} else if (k === "m") {
+			STATE.ui.tab = "calendar";
+			STATE.ui.calView = "month";
+			navigate("calendar");
+			renderApp();
+			showToast("🗓️ Month View", "info");
+		} else if (k === "b") {
+			STATE.ui.sidecarOpen = !STATE.ui.sidecarOpen;
+			renderApp();
+			showToast(
+				STATE.ui.sidecarOpen ? "📥 Backlog Opened" : "Backlog Closed",
+				"info",
+			);
+		} else if (k === "r") {
+			STATE.ui.showModal = "retrospective";
 			renderApp();
 		}
 	}

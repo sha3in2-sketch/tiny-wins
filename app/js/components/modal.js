@@ -172,6 +172,137 @@ export function renderModalRoot() {
     `;
 	}
 
+	// Command Palette Modal (Cmd+K / Ctrl+K)
+	if (modalType === "commandPalette") {
+		return `
+      <div class="modal-backdrop" id="modal-backdrop">
+        <div class="modal-card" style="text-align:left;max-width:480px;padding:18px;">
+          <button class="modal-close" data-action="close-modal" aria-label="Close">×</button>
+          <div style="display:flex;align-items:center;gap:8px;border-bottom:1.5px solid var(--line);padding-bottom:12px;margin-bottom:12px">
+            <span style="font-size:20px">⚡</span>
+            <input id="palette-search" class="input-text" placeholder="Type a view or action... (T, W, D, M, B, R)" style="border:0;outline:none;box-shadow:none;font-size:15px;width:100%" autofocus />
+          </div>
+
+          <div style="font-size:11px;font-weight:700;color:var(--mute);letter-spacing:0.5px;margin-bottom:6px">VIEWS & NAVIGATION</div>
+          <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px">
+            <button class="palette-item" data-action="palette-navigate" data-tab="today">
+              <span>☀️ Jump to Today</span>
+              <kbd class="kbd-badge">T</kbd>
+            </button>
+            <button class="palette-item" data-action="palette-navigate" data-tab="calendar" data-cal="timegrid">
+              <span>⏱️ Week Time-Grid</span>
+              <kbd class="kbd-badge">W</kbd>
+            </button>
+            <button class="palette-item" data-action="palette-navigate" data-tab="calendar" data-cal="daygrid">
+              <span>📅 Single Day Planner</span>
+              <kbd class="kbd-badge">D</kbd>
+            </button>
+            <button class="palette-item" data-action="palette-navigate" data-tab="calendar" data-cal="month">
+              <span>🗓️ Month View</span>
+              <kbd class="kbd-badge">M</kbd>
+            </button>
+            <button class="palette-item" data-action="palette-navigate" data-tab="tasks">
+              <span>✅ Weekly Habits Matrix</span>
+              <kbd class="kbd-badge">H</kbd>
+            </button>
+          </div>
+
+          <div style="font-size:11px;font-weight:700;color:var(--mute);letter-spacing:0.5px;margin-bottom:6px">ACTIONS & TOOLS</div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <button class="palette-item" data-action="palette-action" data-subaction="toggle-sidecar">
+              <span>📥 Toggle Unscheduled Backlog Drawer</span>
+              <kbd class="kbd-badge">B</kbd>
+            </button>
+            <button class="palette-item" data-action="palette-action" data-subaction="open-retrospective">
+              <span>🏆 Daily Wins Retrospective</span>
+              <kbd class="kbd-badge">R</kbd>
+            </button>
+            <button class="palette-item" data-action="palette-action" data-subaction="open-pairing">
+              <span>📱 Connect Phone / Show QR</span>
+              <kbd class="kbd-badge">P</kbd>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+	}
+
+	// Daily Wins Retrospective Modal
+	if (modalType === "retrospective") {
+		const curDate = STATE.ui.sel || today();
+		const dTasks = tasks(curDate);
+		const completed = dTasks.filter((t) => t.d);
+		const winCount = completed.length;
+		const hasHatTrick = winCount >= 3;
+
+		let winPoints = 0;
+		let focusMins = 0;
+		for (const t of completed) {
+			winPoints += t.winScore || (t.priority === "high" ? 3 : 1);
+			focusMins += t.duration || 30;
+		}
+
+		return `
+      <div class="modal-backdrop" id="modal-backdrop">
+        <div class="modal-card" style="text-align:center;max-width:480px;padding:24px;">
+          <button class="modal-close" data-action="close-modal" aria-label="Close">×</button>
+          <div style="font-size:36px;margin-bottom:6px">🏆</div>
+          <h2 style="font-size:22px;margin-bottom:4px">Daily Wins Retrospective</h2>
+          <p style="color:var(--mute);font-size:13px;margin:0 0 16px">Celebrate today's momentum and intentional focus.</p>
+
+          ${
+						hasHatTrick
+							? `
+            <div style="background:linear-gradient(135deg, rgba(255,201,77,0.18) 0%, rgba(255,111,168,0.18) 100%);border:2px solid var(--sun);border-radius:14px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px">
+              <span style="font-size:22px">🔥</span>
+              <b style="color:#b45309;font-size:14px">Hat Trick Achieved! 3+ Wins Completed!</b>
+            </div>
+          `
+							: ""
+					}
+
+          <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;margin-bottom:18px">
+            <div style="background:var(--pl);border-radius:14px;padding:12px 8px">
+              <b style="display:block;font-size:22px;color:var(--p)">${winCount}</b>
+              <span style="font-size:10px;color:var(--mute);font-weight:700">WINS LOGGED</span>
+            </div>
+            <div style="background:#e6f9f3;border-radius:14px;padding:12px 8px">
+              <b style="display:block;font-size:22px;color:var(--mint)">${(focusMins / 60).toFixed(1)}h</b>
+              <span style="font-size:10px;color:var(--mute);font-weight:700">FOCUS BLOCKED</span>
+            </div>
+            <div style="background:#fff8e1;border-radius:14px;padding:12px 8px">
+              <b style="display:block;font-size:22px;color:var(--sun)">${winPoints} pts</b>
+              <span style="font-size:10px;color:var(--mute);font-weight:700">WIN SCORE</span>
+            </div>
+          </div>
+
+          <div style="text-align:left;background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;max-height:160px;overflow-y:auto;margin-bottom:18px">
+            <div style="font-size:11px;font-weight:700;color:var(--mute);margin-bottom:6px">COMPLETED WINS TODAY:</div>
+            ${
+							completed.length
+								? completed
+										.map(
+											(t) => `
+              <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink);padding:3px 0">
+                <span style="color:var(--mint)">✓</span>
+                <span style="text-decoration:line-through;opacity:0.8">${esc(t.t)}</span>
+                ${t.time ? `<span class="task-time-chip" style="font-size:10px">${t.time}</span>` : ""}
+              </div>
+            `,
+										)
+										.join("")
+								: '<span style="font-size:13px;color:var(--mute)">No completed wins yet today. Check off a task to earn your first win!</span>'
+						}
+          </div>
+
+          <button class="btn-primary" data-action="celebrate-and-plan" style="width:100%;padding:12px;font-size:14px;border-radius:var(--radius-pill)">
+            🎉 Celebrate & Plan Tomorrow
+          </button>
+        </div>
+      </div>
+    `;
+	}
+
 	return "";
 }
 

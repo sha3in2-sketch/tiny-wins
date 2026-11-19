@@ -49,6 +49,164 @@ export function formatTimeLabel(hour, min) {
 	return `${displayH}:${pad(min)} ${period}`;
 }
 
+// Interval Partitioning Algorithm (Sweep-Line Greedy Coloring for collision-free parallel slots)
+export function layoutOverlappingEvents(
+	events,
+	pixelsPerHour = HOUR_HEIGHT,
+	startHour = START_HOUR,
+	endHour = END_HOUR,
+) {
+	const valid = [];
+	for (const task of events) {
+		if (!task.time) continue;
+		const parsed = parseTimeString(task.time);
+		if (!parsed) continue;
+		if (parsed.hour < startHour || parsed.hour > endHour) continue;
+
+		const startMin = parsed.hour * 60 + parsed.min;
+		const durationMin = Math.max(task.duration || 30, 15);
+		const endMin = startMin + durationMin;
+
+		valid.push({
+			task,
+			startMin,
+			endMin,
+			durationMin,
+		});
+	}
+
+	if (valid.length === 0) return [];
+
+	// 1. Sort by startMin asc, then durationMin desc
+	valid.sort((a, b) => {
+		if (a.startMin !== b.startMin) return a.startMin - b.startMin;
+		return b.durationMin - a.durationMin;
+	});
+
+	// 2. Greedy column placement
+	const columns = [];
+	const visualEvents = [];
+
+	for (const ev of valid) {
+		let placedCol = -1;
+		for (let c = 0; c < columns.length; c++) {
+			if (columns[c] <= ev.startMin) {
+				placedCol = c;
+				columns[c] = ev.endMin;
+				break;
+			}
+		}
+
+		if (placedCol === -1) {
+			columns.push(ev.endMin);
+			placedCol = columns.length - 1;
+		}
+
+		const minutesFromStart = ev.startMin - startHour * 60;
+		const top = (minutesFromStart / 60) * pixelsPerHour;
+		const height = Math.max((ev.durationMin / 60) * pixelsPerHour - 3, 24);
+
+		visualEvents.push({
+			task: ev.task,
+			column: placedCol,
+			totalColumns: 1,
+			top,
+			height,
+			startMin: ev.startMin,
+			endMin: ev.endMin,
+		});
+	}
+
+	// 3. Cluster normalization pass
+	for (let i = 0; i < visualEvents.length; i++) {
+		const cur = visualEvents[i];
+		const cluster = visualEvents.filter((other) => {
+			return (
+				Math.max(cur.startMin, other.startMin) <
+				Math.min(cur.endMin, other.endMin)
+			);
+		});
+
+		const maxCol = Math.max(...cluster.map((e) => e.column)) + 1;
+		for (const e of cluster) {
+			e.totalColumns = Math.max(e.totalColumns, maxCol);
+		}
+	}
+
+	return visualEvents;
+}
+
+// Notion Calendar-style Unscheduled Sidecar Drawer
+export function renderSidecarTray() {
+	if (!STATE.ui.sidecarOpen) return "";
+	const items = STATE.inbox || [];
+
+	return `
+    <aside class="calendar-sidecar" id="calendar-sidecar">
+      <div class="sidecar-header">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:16px">📥</span>
+          <b style="font-size:13px;color:var(--ink)">Unscheduled Tray</b>
+          <span class="chip" style="font-size:11px;padding:2px 7px">${items.length}</span>
+        </div>
+        <button class="sidecar-close-btn" data-action="toggle-sidecar" title="Close Tray (Shortcut: B)">×</button>
+      </div>
+
+      <div class="sidecar-input-wrap">
+        <input id="sidecar-input" class="input-text" placeholder="Add backlog task... (Enter)" maxlength="120" />
+        <button class="btn-primary" data-action="add-inbox-item" style="padding:6px 12px;font-size:12px;border-radius:10px">+ Add</button>
+      </div>
+
+      <div class="sidecar-list">
+        ${
+					items.length
+						? items
+								.map((item) => {
+									const isGmail = item.source?.type === "gmail";
+									const isGcal = item.source?.type === "google_calendar";
+									const sourceBadge = isGmail
+										? '<span class="source-chip gmail">📧 Gmail</span>'
+										: isGcal
+											? '<span class="source-chip gcal">🗓️ GCal</span>'
+											: '<span class="source-chip manual">✨ Task</span>';
+
+									return `
+            <div class="sidecar-card ${item.priority === "high" ? "high-priority" : ""}">
+              <div class="sidecar-card-top">
+                ${sourceBadge}
+                <span class="sidecar-est-pill">${item.estimatedMinutes || 30}m</span>
+              </div>
+              <div class="sidecar-card-title">${esc(item.t)}</div>
+              ${item.source?.senderEmail ? `<div class="sidecar-card-meta">From: ${esc(item.source.senderEmail)}</div>` : ""}
+              <div class="sidecar-card-footer">
+                <button
+                  class="pill primary sidecar-schedule-btn"
+                  data-action="schedule-inbox-item"
+                  data-id="${item.id}"
+                  title="1-click schedule into next free slot"
+                >
+                  ⚡ Time Block
+                </button>
+                <button
+                  class="sidecar-del-btn"
+                  data-action="delete-inbox-item"
+                  data-id="${item.id}"
+                  title="Delete from backlog"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          `;
+								})
+								.join("")
+						: '<div class="sidecar-empty">All backlog items scheduled! Add new commitments above or connect Gmail.</div>'
+				}
+      </div>
+    </aside>
+  `;
+}
+
 export function renderCalendarView() {
 	const currentYear = STATE.ui.calYear;
 	const currentMonth = STATE.ui.calMonth;
@@ -214,40 +372,40 @@ export function renderCalendarView() {
 										)
 										.join("")}
 
-                  <!-- Sub-Slot Blocks placed inside their hours -->
-                  ${dayTasks
-										.filter((t) => t.time)
-										.map((t) => {
-											const parsed = parseTimeString(t.time);
-											if (
-												!parsed ||
-												parsed.hour < START_HOUR ||
-												parsed.hour > END_HOUR
-											) {
-												return "";
-											}
-
-											const topPx =
-												(parsed.hour - START_HOUR) * HOUR_HEIGHT +
-												(parsed.min / 60) * HOUR_HEIGHT;
-											const durationMins = t.duration || 45;
-											const heightPx = Math.max(
-												(durationMins / 60) * HOUR_HEIGHT - 3,
-												26,
-											);
-
-											// Pick color styling
+                  <!-- Parallel Collision-Free Time-Blocks (Sweep-Line Greedy Interval Partitioning) -->
+                  ${layoutOverlappingEvents(
+										dayTasks,
+										HOUR_HEIGHT,
+										START_HOUR,
+										END_HOUR,
+									)
+										.map((ve) => {
+											const t = ve.task;
 											const colorClass =
-												t.priority === "high"
-													? "color-pink"
-													: t.priority === "med"
-														? "color-sun"
-														: "color-blue";
+												t.source?.type === "gmail"
+													? "color-teal"
+													: t.type === "meeting" ||
+															t.source?.type === "google_calendar"
+														? "color-purple"
+														: t.priority === "high"
+															? "color-pink"
+															: t.priority === "med"
+																? "color-sun"
+																: "color-blue";
+
+											const leftStyle = `calc(3px + (100% - 6px) * ${ve.column} / ${ve.totalColumns})`;
+											const widthStyle = `calc((100% - 6px) / ${ve.totalColumns} - 2px)`;
+											const sourceIcon =
+												t.source?.type === "gmail"
+													? "📧 "
+													: t.source?.type === "google_calendar"
+														? "🗓️ "
+														: "";
 
 											return `
                       <div
                         class="time-block ${colorClass} ${t.d ? "done" : ""}"
-                        style="top:${topPx}px;height:${heightPx}px;"
+                        style="top:${ve.top}px;height:${ve.height}px;left:${leftStyle};width:${widthStyle};"
                         data-action="toggle-task-done"
                         data-id="${t.id}"
                         data-date="${dKey}"
@@ -269,7 +427,7 @@ export function renderCalendarView() {
                             data-id="${t.id}"
                             data-date="${dKey}"
                             title="Click to cross out: ${esc(t.t)}"
-                          >${esc(t.t)}</span>
+                          >${sourceIcon}${esc(t.t)}</span>
                           <span class="time-block-time">${t.time}</span>
                         </div>
                         <div class="time-block-actions">
@@ -366,37 +524,40 @@ export function renderCalendarView() {
 								)
 								.join("")}
 
-              ${dayTasks
-								.filter((t) => t.time)
-								.map((t) => {
-									const parsed = parseTimeString(t.time);
-									if (
-										!parsed ||
-										parsed.hour < START_HOUR ||
-										parsed.hour > END_HOUR
-									)
-										return "";
-
-									const topPx =
-										(parsed.hour - START_HOUR) * HOUR_HEIGHT +
-										(parsed.min / 60) * HOUR_HEIGHT;
-									const durationMins = t.duration || 45;
-									const heightPx = Math.max(
-										(durationMins / 60) * HOUR_HEIGHT - 3,
-										30,
-									);
-
+              <!-- Parallel Collision-Free Day Time-Blocks -->
+              ${layoutOverlappingEvents(
+								dayTasks,
+								HOUR_HEIGHT,
+								START_HOUR,
+								END_HOUR,
+							)
+								.map((ve) => {
+									const t = ve.task;
 									const colorClass =
-										t.priority === "high"
-											? "color-pink"
-											: t.priority === "med"
-												? "color-sun"
-												: "color-blue";
+										t.source?.type === "gmail"
+											? "color-teal"
+											: t.type === "meeting" ||
+													t.source?.type === "google_calendar"
+												? "color-purple"
+												: t.priority === "high"
+													? "color-pink"
+													: t.priority === "med"
+														? "color-sun"
+														: "color-blue";
+
+									const leftStyle = `calc(3px + (100% - 6px) * ${ve.column} / ${ve.totalColumns})`;
+									const widthStyle = `calc((100% - 6px) / ${ve.totalColumns} - 2px)`;
+									const sourceIcon =
+										t.source?.type === "gmail"
+											? "📧 "
+											: t.source?.type === "google_calendar"
+												? "🗓️ "
+												: "";
 
 									return `
                   <div
                     class="time-block ${colorClass} ${t.d ? "done" : ""}"
-                    style="top:${topPx}px;height:${heightPx}px;"
+                    style="top:${ve.top}px;height:${ve.height}px;left:${leftStyle};width:${widthStyle};"
                     data-action="toggle-task-done"
                     data-id="${t.id}"
                     data-date="${activeDateKey}"
@@ -418,7 +579,7 @@ export function renderCalendarView() {
                         data-id="${t.id}"
                         data-date="${activeDateKey}"
                         title="Click to cross out: ${esc(t.t)}"
-                      >${esc(t.t)}</span>
+                      >${sourceIcon}${esc(t.t)}</span>
                       <span class="time-block-time" style="font-size:11px">${t.time}</span>
                     </div>
                     <div class="time-block-actions">
@@ -476,15 +637,15 @@ export function renderCalendarView() {
               class="cal-mode-btn ${viewMode === "timegrid" ? "active" : ""}"
               data-action="set-cal-mode"
               data-mode="timegrid"
-              title="Notion / Google Calendar Week Time Grid"
+              title="Notion / Google Calendar Week Time Grid (W)"
             >
-              ⏱️ Week Grid
+              ⏱️ Week
             </button>
             <button
               class="cal-mode-btn ${viewMode === "daygrid" ? "active" : ""}"
               data-action="set-cal-mode"
               data-mode="daygrid"
-              title="Single Day Time Grid"
+              title="Single Day Planner (D)"
             >
               📅 Day
             </button>
@@ -492,16 +653,48 @@ export function renderCalendarView() {
               class="cal-mode-btn ${viewMode === "month" ? "active" : ""}"
               data-action="set-cal-mode"
               data-mode="month"
-              title="Full Month Calendar"
+              title="Full Month Calendar (M)"
             >
               🗓️ Month
             </button>
           </div>
+
+          <!-- Unscheduled Tray Toggle (Notion Calendar style) -->
+          <button
+            class="pill ${STATE.ui.sidecarOpen ? "active" : "secondary"}"
+            data-action="toggle-sidecar"
+            title="Unscheduled Backlog Tray (B)"
+          >
+            📥 Backlog <span class="badge-mini" style="background:${STATE.ui.sidecarOpen ? "#fff" : "var(--pl)"};color:${STATE.ui.sidecarOpen ? "var(--p)" : "var(--p)"};border-radius:6px;padding:1px 6px;font-size:11px;font-weight:700">${(STATE.inbox || []).length}</span>
+          </button>
+
+          <!-- Command Palette Trigger -->
+          <button
+            class="pill secondary"
+            data-action="open-command-palette"
+            title="Command Palette (⌘K / Ctrl+K)"
+          >
+            ⚡ ⌘K
+          </button>
+
+          <!-- Daily Wins Retrospective -->
+          <button
+            class="pill secondary"
+            data-action="open-retrospective"
+            title="Daily Wins Retrospective (R)"
+          >
+            🏆 Wins
+          </button>
         </div>
       </div>
 
-      <!-- Main Rendered View Mode -->
-      ${mainContentHtml}
+      <!-- Main Rendered View Mode with Notion-Style Sidecar Tray -->
+      <div class="calendar-workspace ${STATE.ui.sidecarOpen ? "with-sidecar" : ""}">
+        <div class="calendar-main-pane">
+          ${mainContentHtml}
+        </div>
+        ${renderSidecarTray()}
+      </div>
     </section>
   `;
 }

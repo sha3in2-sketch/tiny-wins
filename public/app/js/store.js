@@ -9,11 +9,12 @@ export const ROOM_KEY = "tinywins.room_id";
 
 // Base initial state
 export const STATE = {
-	days: {}, // { [dateKey]: [{ id, t, d, priority, time, duration, note, projectId }] }
+	days: {}, // { [dateKey]: [{ id, t, d, priority, time, duration, type, source, winScore, notes, tags }] }
 	weeks: {}, // { [weekKey]: [{ id, t, hi, c: [7 booleans] }] }
 	events: {}, // { [dateKey]: [{ id, title, start, end, color, source, url }] }
 	notes: {}, // { [dateKey]: { body, mood, energy, updatedAt } }
 	projects: [], // [{ id, name, emoji, color, tasks: [{ id, t, status }] }]
+	inbox: [], // Unscheduled commitment tray (Notion Calendar style): [{ id, t, priority, estimatedMinutes, type, source, winScore }]
 	pomodoro: {
 		active: false,
 		taskId: null,
@@ -29,8 +30,9 @@ export const STATE = {
 		calYear: new Date().getFullYear(),
 		calMonth: new Date().getMonth(),
 		calView: "timegrid", // 'timegrid' | 'daygrid' | 'month'
-		showModal: null, // null | 'pairing' | 'dayDetail' | 'editTask'
-		editTaskData: null, // { id, date, t, time, priority }
+		sidecarOpen: true, // Notion-style unscheduled tray open
+		showModal: null, // null | 'pairing' | 'dayDetail' | 'editTask' | 'commandPalette' | 'retrospective'
+		editTaskData: null, // { id, date, t, time, priority, duration, type, source }
 		detailDate: today(), // date selected in calendar
 		popId: null, // animation target id
 	},
@@ -77,7 +79,45 @@ export function loadState() {
 				safeAssign(STATE.events, parsed.events);
 				safeAssign(STATE.notes, parsed.notes);
 				if (Array.isArray(parsed.projects)) STATE.projects = parsed.projects;
+				if (Array.isArray(parsed.inbox)) STATE.inbox = parsed.inbox;
 			}
+		}
+
+		// Seed initial inbox backlog items if empty
+		if (!STATE.inbox || STATE.inbox.length === 0) {
+			STATE.inbox = [
+				{
+					id: "inbox-1",
+					t: "Deep Work: Second Brain System Architecture",
+					priority: "high",
+					estimatedMinutes: 45,
+					type: "task",
+					source: { type: "manual" },
+					winScore: 3,
+				},
+				{
+					id: "inbox-2",
+					t: "Review RFC 5545 Incremental Sync Spec",
+					priority: "normal",
+					estimatedMinutes: 30,
+					type: "task",
+					source: {
+						type: "gmail",
+						senderEmail: "eng-team@startup.io",
+						deepLink: "https://mail.google.com",
+					},
+					winScore: 2,
+				},
+				{
+					id: "inbox-3",
+					t: "Weekly Project Alignment & Retrospective",
+					priority: "normal",
+					estimatedMinutes: 30,
+					type: "meeting",
+					source: { type: "google_calendar" },
+					winScore: 1,
+				},
+			];
 		}
 
 		// 2. Backward compatibility migration from original Tiny Wins
@@ -111,6 +151,7 @@ export function saveState() {
 			events: STATE.events,
 			notes: STATE.notes,
 			projects: STATE.projects,
+			inbox: STATE.inbox,
 		};
 		localStorage.setItem(NEW_STORAGE_KEY, JSON.stringify(payload));
 		localStorage.setItem(
@@ -164,4 +205,25 @@ export function streak() {
 		d = add(d, -1);
 	}
 	return n;
+}
+
+export function getDailyWinStats(dateKey = today()) {
+	const tList = tasks(dateKey);
+	const done = tList.filter((x) => x.d);
+	const totalWins = done.length;
+	let winScore = 0;
+	let focusMinutes = 0;
+
+	for (const item of done) {
+		winScore += item.winScore || (item.priority === "high" ? 3 : 1);
+		focusMinutes += item.duration || 30;
+	}
+
+	return {
+		totalWins,
+		totalCount: tList.length,
+		winScore,
+		focusHours: (focusMinutes / 60).toFixed(1),
+		hasHatTrick: totalWins >= 3,
+	};
 }
