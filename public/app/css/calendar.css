@@ -472,11 +472,16 @@
 /* Crossing out done time-blocks */
 .time-block.done {
 	opacity: 0.55;
-	filter: grayscale(0.4);
+	filter: grayscale(0.5);
 }
 
 .time-block.done .time-block-title {
 	text-decoration: line-through;
+}
+
+.time-block.done .time-block-time {
+	text-decoration: line-through;
+	opacity: 0.7;
 }
 
 /* Red / Neon Current Time Indicator Line */

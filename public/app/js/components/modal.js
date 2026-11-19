@@ -19,8 +19,8 @@ export function renderModalRoot() {
 		const pairUrl = getPairingUrl();
 		const currentRoomId = getRoomId();
 		return `
-      <div class="modal-backdrop" id="modal-backdrop" data-action="close-modal">
-        <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-backdrop" id="modal-backdrop">
+        <div class="modal-card">
           <button class="modal-close" data-action="close-modal" aria-label="Close">×</button>
           <h2 style="font-size:24px;margin-bottom:4px">📱 24/7 Phone Sync</h2>
           <p class="hint" style="color:var(--mute);font-size:14px;margin:0 0 10px">Works even when your laptop is completely turned off!</p>
@@ -67,8 +67,8 @@ export function renderModalRoot() {
 		const relativeLabel = rel(selDate);
 
 		return `
-      <div class="modal-backdrop" id="modal-backdrop" data-action="close-modal">
-        <div class="modal-card" style="text-align:left;max-width:540px" onclick="event.stopPropagation()">
+      <div class="modal-backdrop" id="modal-backdrop">
+        <div class="modal-card" style="text-align:left;max-width:540px">
           <button class="modal-close" data-action="close-modal" aria-label="Close">×</button>
           <div style="margin-bottom:16px">
             <h2 style="font-size:22px">${dateLabel} ${relativeLabel ? `<span class="chip">${relativeLabel}</span>` : ""}</h2>
@@ -91,11 +91,23 @@ export function renderModalRoot() {
 								? dTasks
 										.map(
 											(t) => `
-              <div class="task-row ${t.d ? "done" : ""} ${t.priority === "high" ? "priority-high" : t.priority === "med" ? "priority-med" : ""}">
-                <button class="task-check ${t.d ? "done" : ""}" data-action="toggle-task-done" data-id="${t.id}" data-date="${selDate}">
+              <div
+                class="task-row ${t.d ? "done" : ""} ${t.priority === "high" ? "priority-high" : t.priority === "med" ? "priority-med" : ""}"
+                data-action="toggle-task-done"
+                data-id="${t.id}"
+                data-date="${selDate}"
+                title="${t.d ? "Completed! Click to uncross" : "Click to cross out"}"
+              >
+                <button
+                  class="task-check ${t.d ? "done" : ""}"
+                  data-action="toggle-task-done"
+                  data-id="${t.id}"
+                  data-date="${selDate}"
+                  title="${t.d ? "Mark not done" : "Mark done & cross out"}"
+                >
                   ${t.d ? "✓" : ""}
                 </button>
-                <div class="task-text" data-action="open-edit-task" data-id="${t.id}" data-date="${selDate}">
+                <div class="task-text">
                   ${t.time ? `<span class="task-time-chip">${t.time}</span>` : ""}
                   <span class="task-title-text">${esc(t.t)}</span>
                 </div>
@@ -121,8 +133,8 @@ export function renderModalRoot() {
 		if (!editData) return "";
 
 		return `
-      <div class="modal-backdrop" id="modal-backdrop" data-action="close-modal">
-        <div class="modal-card" style="text-align:left;max-width:440px" onclick="event.stopPropagation()">
+      <div class="modal-backdrop" id="modal-backdrop">
+        <div class="modal-card" style="text-align:left;max-width:440px">
           <button class="modal-close" data-action="close-modal" aria-label="Close">×</button>
           <div style="margin-bottom:16px">
             <h2 style="font-size:20px">✏️ Edit Task</h2>

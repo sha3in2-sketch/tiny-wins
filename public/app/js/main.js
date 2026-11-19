@@ -88,6 +88,13 @@ autoScrollTimeGrid();
 
 // 3. Global Event Delegation
 document.addEventListener("click", async (e) => {
+	// Close modal if user clicks on dark backdrop outside the modal card
+	if (e.target.id === "modal-backdrop") {
+		STATE.ui.showModal = null;
+		renderApp();
+		return;
+	}
+
 	const target = e.target.closest("[data-action]");
 	if (!target) return;
 
@@ -196,7 +203,7 @@ document.addEventListener("click", async (e) => {
 		return;
 	}
 
-	if (action === "cycle-priority") {
+	if (action === "cycle-priority" || action === "toggle-detail-priority") {
 		const current = target.dataset.priority || "normal";
 		const next =
 			current === "normal" ? "high" : current === "high" ? "med" : "normal";
@@ -213,9 +220,23 @@ document.addEventListener("click", async (e) => {
 	}
 
 	if (action === "toggle-task-done") {
-		const date = dateKey || STATE.ui.sel || today();
-		const list = STATE.days[date] || [];
-		const task = list.find((t) => t.id === id);
+		const targetDate =
+			dateKey || STATE.ui.detailDate || STATE.ui.sel || today();
+		let task = (STATE.days[targetDate] || []).find((t) => t.id === id);
+		let finalDate = targetDate;
+
+		// Fallback lookup across all days if not in targetDate
+		if (!task) {
+			for (const [k, dTasks] of Object.entries(STATE.days)) {
+				const found = dTasks.find((t) => t.id === id);
+				if (found) {
+					task = found;
+					finalDate = k;
+					break;
+				}
+			}
+		}
+
 		if (task) {
 			task.d = !task.d;
 			STATE.ui.popId = task.d ? id : null;
@@ -223,7 +244,7 @@ document.addEventListener("click", async (e) => {
 			debouncedPush();
 
 			if (task.d) {
-				if (pct(date) === 1) {
+				if (pct(finalDate) === 1) {
 					fireConfetti();
 					showToast("🎉 Perfect day! All tasks complete!", "success");
 				}
@@ -233,24 +254,47 @@ document.addEventListener("click", async (e) => {
 	}
 
 	if (action === "delete-task") {
-		const date = dateKey || STATE.ui.sel || today();
-		if (STATE.days[date]) {
-			STATE.days[date] = STATE.days[date].filter((t) => t.id !== id);
-			saveState();
-			debouncedPush();
+		const targetDate =
+			dateKey || STATE.ui.detailDate || STATE.ui.sel || today();
+		if (STATE.days[targetDate]?.some((t) => t.id === id)) {
+			STATE.days[targetDate] = STATE.days[targetDate].filter(
+				(t) => t.id !== id,
+			);
+		} else {
+			for (const [k, dTasks] of Object.entries(STATE.days)) {
+				if (dTasks.some((t) => t.id === id)) {
+					STATE.days[k] = dTasks.filter((t) => t.id !== id);
+					break;
+				}
+			}
 		}
+		saveState();
+		debouncedPush();
 		return;
 	}
 
 	// --- Task Editing Actions ---
 	if (action === "open-edit-task") {
-		const date = dateKey || STATE.ui.sel || today();
-		const list = STATE.days[date] || [];
-		const task = list.find((t) => t.id === id);
+		const targetDate =
+			dateKey || STATE.ui.detailDate || STATE.ui.sel || today();
+		let task = (STATE.days[targetDate] || []).find((t) => t.id === id);
+		let finalDate = targetDate;
+
+		if (!task) {
+			for (const [k, dTasks] of Object.entries(STATE.days)) {
+				const found = dTasks.find((t) => t.id === id);
+				if (found) {
+					task = found;
+					finalDate = k;
+					break;
+				}
+			}
+		}
+
 		if (task) {
 			STATE.ui.editTaskData = {
 				id: task.id,
-				date: date,
+				date: finalDate,
 				t: task.t,
 				time: task.time || "",
 				priority: task.priority || "normal",
@@ -590,6 +634,12 @@ document.addEventListener("keydown", (e) => {
 			if (btn) btn.click();
 		} else if (e.target.id === "room-input-modal") {
 			const btn = document.querySelector('[data-action="change-room-code"]');
+			if (btn) btn.click();
+		} else if (
+			e.target.id === "edit-task-title" ||
+			e.target.id === "edit-task-time"
+		) {
+			const btn = document.querySelector('[data-action="save-edited-task"]');
 			if (btn) btn.click();
 		}
 	}

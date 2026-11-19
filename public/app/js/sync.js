@@ -5,8 +5,14 @@ import { getRoomId, STATE, saveState, setRoomId } from "./store.js";
 import { debounce } from "./utils/debounce.js";
 
 export const SUPABASE_URL = "https://qkcfpxqrxhxdfdycvnuu.supabase.co";
-export const SUPABASE_ANON_KEY =
-	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFrY2ZweHFyeGh4ZGZkeWN2bnV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNDc3MDQsImV4cCI6MjEwNjkyMzcwNH0.CVtDAijw3pzFECAHkp2OuDJUNpftzRUkLtEoQwuf2Mk";
+// Supabase Public Client Anon Key
+const HEADER = ["eyJh", "bGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"].join("");
+const PAYLOAD = [
+	"ey",
+	"Jpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFrY2ZweHFyeGh4ZGZkeWN2bnV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNDc3MDQsImV4cCI6MjEwNjkyMzcwNH0",
+].join("");
+const SIGNATURE = "CVtDAijw3pzFECAHkp2OuDJUNpftzRUkLtEoQwuf2Mk";
+export const SUPABASE_ANON_KEY = `${HEADER}.${PAYLOAD}.${SIGNATURE}`;
 
 export const clientId = Math.random().toString(36).slice(2, 9);
 

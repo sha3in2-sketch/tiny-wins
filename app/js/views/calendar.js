@@ -32,8 +32,8 @@ export function parseTimeString(timeStr) {
 	if (!timeStr) return null;
 	const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(am|pm)?/i);
 	if (!match) return null;
-	let hour = parseInt(match[1], 10);
-	const min = parseInt(match[2], 10);
+	let hour = Number.parseInt(match[1], 10);
+	const min = Number.parseInt(match[2], 10);
 	const modifier = match[3] ? match[3].toLowerCase() : null;
 
 	if (modifier === "pm" && hour < 12) hour += 12;
@@ -100,19 +100,25 @@ export function renderCalendarView() {
 									.join("")}
               </div>
 
-              <!-- Desktop preview pills -->
+              <!-- Desktop preview pills (clickable to toggle/cross!) -->
               <div class="cal-preview-list">
                 ${dayTasks
-									.slice(0, 2)
+									.slice(0, 3)
 									.map(
 										(t) => `
-                  <span class="cal-preview-pill ${t.d ? "done" : ""}">
-                    ${t.time ? `<b>${t.time}</b> ` : ""}${esc(t.t)}
-                  </span>
+                  <button
+                    class="cal-preview-pill ${t.d ? "done" : ""}"
+                    data-action="toggle-task-done"
+                    data-id="${t.id}"
+                    data-date="${cell.key}"
+                    title="Click to cross out: ${esc(t.t)}"
+                  >
+                    ${t.d ? "✓ " : ""}${t.time ? `<b>${t.time}</b> ` : ""}${esc(t.t)}
+                  </button>
                 `,
 									)
 									.join("")}
-                ${totalTasks > 2 ? `<span style="font-size:10px;color:var(--mute);font-weight:700">+${totalTasks - 2} more</span>` : ""}
+                ${totalTasks > 3 ? `<span style="font-size:10px;color:var(--mute);font-weight:700">+${totalTasks - 3} more</span>` : ""}
               </div>
             </div>
           `;
@@ -242,9 +248,12 @@ export function renderCalendarView() {
                       <div
                         class="time-block ${colorClass} ${t.d ? "done" : ""}"
                         style="top:${topPx}px;height:${heightPx}px;"
-                        title="${esc(t.t)} (${t.time})"
+                        data-action="toggle-task-done"
+                        data-id="${t.id}"
+                        data-date="${dKey}"
+                        title="${t.d ? "Completed! Click to uncross" : `Click to cross out: ${esc(t.t)}`}"
                       >
-                        <div class="time-block-content" data-action="open-edit-task" data-id="${t.id}" data-date="${dKey}">
+                        <div class="time-block-content">
                           <button
                             class="time-block-check ${t.d ? "checked" : ""}"
                             data-action="toggle-task-done"
@@ -254,7 +263,13 @@ export function renderCalendarView() {
                           >
                             ${t.d ? "✓" : ""}
                           </button>
-                          <span class="time-block-title">${esc(t.t)}</span>
+                          <span
+                            class="time-block-title"
+                            data-action="toggle-task-done"
+                            data-id="${t.id}"
+                            data-date="${dKey}"
+                            title="Click to cross out: ${esc(t.t)}"
+                          >${esc(t.t)}</span>
                           <span class="time-block-time">${t.time}</span>
                         </div>
                         <div class="time-block-actions">
@@ -382,8 +397,12 @@ export function renderCalendarView() {
                   <div
                     class="time-block ${colorClass} ${t.d ? "done" : ""}"
                     style="top:${topPx}px;height:${heightPx}px;"
+                    data-action="toggle-task-done"
+                    data-id="${t.id}"
+                    data-date="${activeDateKey}"
+                    title="${t.d ? "Completed! Click to uncross" : `Click to cross out: ${esc(t.t)}`}"
                   >
-                    <div class="time-block-content" data-action="open-edit-task" data-id="${t.id}" data-date="${activeDateKey}">
+                    <div class="time-block-content">
                       <button
                         class="time-block-check ${t.d ? "checked" : ""}"
                         data-action="toggle-task-done"
@@ -392,7 +411,14 @@ export function renderCalendarView() {
                       >
                         ${t.d ? "✓" : ""}
                       </button>
-                      <span class="time-block-title" style="font-size:13px">${esc(t.t)}</span>
+                      <span
+                        class="time-block-title"
+                        style="font-size:13px"
+                        data-action="toggle-task-done"
+                        data-id="${t.id}"
+                        data-date="${activeDateKey}"
+                        title="Click to cross out: ${esc(t.t)}"
+                      >${esc(t.t)}</span>
                       <span class="time-block-time" style="font-size:11px">${t.time}</span>
                     </div>
                     <div class="time-block-actions">

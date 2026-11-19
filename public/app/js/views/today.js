@@ -101,7 +101,13 @@ export function renderTodayView() {
 						? tList
 								.map(
 									(t) => `
-            <div class="task-row ${t.d ? "done" : ""} ${t.priority === "high" ? "priority-high" : t.priority === "med" ? "priority-med" : ""}">
+            <div
+              class="task-row ${t.d ? "done" : ""} ${t.priority === "high" ? "priority-high" : t.priority === "med" ? "priority-med" : ""}"
+              data-action="toggle-task-done"
+              data-id="${t.id}"
+              data-date="${selDate}"
+              title="${t.d ? "Completed! Click to uncross" : "Click to cross out"}"
+            >
               <button
                 class="task-check ${t.d ? "done" : ""} ${STATE.ui.popId === t.id ? "pop" : ""}"
                 data-action="toggle-task-done"
@@ -111,7 +117,7 @@ export function renderTodayView() {
               >
                 ${t.d ? "✓" : ""}
               </button>
-              <div class="task-text" data-action="open-edit-task" data-id="${t.id}" data-date="${selDate}">
+              <div class="task-text">
                 ${t.time ? `<span class="task-time-chip">${t.time}</span>` : ""}
                 <span class="task-title-text">${esc(t.t)}</span>
               </div>
