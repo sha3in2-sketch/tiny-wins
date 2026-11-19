@@ -1,4 +1,4 @@
-name: Deploy Pantry to GitHub Pages
+name: Deploy Tiny Wins OS to GitHub Pages
 
 on:
   push:

@@ -1,0 +1,32 @@
+name: Security & Quality Audit
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Semgrep & Biome Security Audits
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+
+      - name: Verify Code Quality (Biome)
+        run: biome check public/app app
+
+      - name: Run Semgrep Security Scan
+        run: |
+          python3 -m pip install semgrep
+          semgrep scan --config auto public/app app
