@@ -1,36 +1,36 @@
 /* ==========================================================================
    TINYWINS OS — TASKS & HABIT PLANNER VIEW
    ========================================================================== */
-import { STATE } from '../store.js';
-import { mon, add, key, dt, today, L } from '../utils/date.js';
-import { esc } from '../utils/escape.js';
+import { STATE } from "../store.js";
+import { add, dt, key, L, mon, today } from "../utils/date.js";
+import { esc } from "../utils/escape.js";
 
-let armedReset = false;
+const armedReset = false;
 
 export function renderTasksView() {
-  const currentWeekKey = STATE.ui.wk || key(mon(new Date()));
-  const weekList = (STATE.weeks[currentWeekKey] || [])
-    .slice()
-    .sort((a, b) => (b.hi ? 1 : 0) - (a.hi ? 1 : 0));
+	const currentWeekKey = STATE.ui.wk || key(mon(new Date()));
+	const weekList = (STATE.weeks[currentWeekKey] || [])
+		.slice()
+		.sort((a, b) => (b.hi ? 1 : 0) - (a.hi ? 1 : 0));
 
-  const weekDays = [...Array(7)].map((_, i) => add(dt(currentWeekKey), i));
-  const tdKey = today();
+	const weekDays = [...Array(7)].map((_, i) => add(dt(currentWeekKey), i));
+	const tdKey = today();
 
-  const totalChecks = weekList.length * 7;
-  const completedChecks = weekList.reduce(
-    (acc, row) => acc + (row.c ? row.c.filter(Boolean).length : 0),
-    0
-  );
-  const completionRatio = totalChecks ? completedChecks / totalChecks : 0;
-  const prevWeekKey = key(add(dt(currentWeekKey), -7));
-  const prevWeekTasks = STATE.weeks[prevWeekKey] || [];
+	const totalChecks = weekList.length * 7;
+	const completedChecks = weekList.reduce(
+		(acc, row) => acc + (row.c ? row.c.filter(Boolean).length : 0),
+		0,
+	);
+	const completionRatio = totalChecks ? completedChecks / totalChecks : 0;
+	const prevWeekKey = key(add(dt(currentWeekKey), -7));
+	const prevWeekTasks = STATE.weeks[prevWeekKey] || [];
 
-  return `
+	return `
     <section class="card">
       <div class="card-header">
         <div>
-          <h2>${L(weekDays[0], { day: 'numeric', month: 'short' })} – ${L(weekDays[6], { day: 'numeric', month: 'short' })}</h2>
-          ${currentWeekKey === key(mon(new Date())) ? '<span class="chip mint">This Week</span>' : ''}
+          <h2>${L(weekDays[0], { day: "numeric", month: "short" })} – ${L(weekDays[6], { day: "numeric", month: "short" })}</h2>
+          ${currentWeekKey === key(mon(new Date())) ? '<span class="chip mint">This Week</span>' : ""}
         </div>
         <div style="display:flex;gap:8px;align-items:center">
           <button class="rnd-btn" data-action="prev-week" aria-label="Previous week">‹</button>
@@ -47,16 +47,20 @@ export function renderTasksView() {
         <b class="f" style="font-size:18px">${Math.round(completionRatio * 100)}%</b>
 
         <button
-          class="pill ${armedReset ? 'active' : 'secondary'}"
-          style="${armedReset ? 'background:var(--pink);color:#fff' : ''}"
+          class="pill ${armedReset ? "active" : "secondary"}"
+          style="${armedReset ? "background:var(--pink);color:#fff" : ""}"
           data-action="reset-weekly-ticks"
         >
-          ${armedReset ? 'Tap again to untick all' : 'Reset ticks'}
+          ${armedReset ? "Tap again to untick all" : "Reset ticks"}
         </button>
 
-        ${!weekList.length && prevWeekTasks.length ? `
+        ${
+					!weekList.length && prevWeekTasks.length
+						? `
           <button class="pill" data-action="copy-prev-week">Copy last week's habits</button>
-        ` : ''}
+        `
+						: ""
+				}
       </div>
 
       <!-- Add New Habit Row -->
@@ -75,43 +79,57 @@ export function renderTasksView() {
       <div class="weekly-container">
         <div class="weekly-grid">
           <div></div>
-          ${weekDays.map((d) => `
-            <div class="weekly-header-day ${key(d) === tdKey ? 'today' : ''}">
-              ${L(d, { weekday: 'short' })}
+          ${weekDays
+						.map(
+							(d) => `
+            <div class="weekly-header-day ${key(d) === tdKey ? "today" : ""}">
+              ${L(d, { weekday: "short" })}
               <b>${d.getDate()}</b>
             </div>
-          `).join('')}
+          `,
+						)
+						.join("")}
 
-          ${weekList.map((row) => `
-            <div class="weekly-task-cell ${row.hi ? 'high-priority' : ''}">
+          ${weekList
+						.map(
+							(row) => `
+            <div class="weekly-task-cell ${row.hi ? "high-priority" : ""}">
               <button class="weekly-star-btn" data-action="toggle-habit-star" data-id="${row.id}">
-                ${row.hi ? '★' : '☆'}
+                ${row.hi ? "★" : "☆"}
               </button>
-              <span style="flex:1;min-width:0;overflow-wrap:anywhere;font-size:15px;font-weight:${row.hi ? '700' : '500'}">
+              <span style="flex:1;min-width:0;overflow-wrap:anywhere;font-size:15px;font-weight:${row.hi ? "700" : "500"}">
                 ${esc(row.t)}
               </span>
               <button class="task-del-btn" data-action="delete-weekly-habit" data-id="${row.id}">×</button>
             </div>
-            ${weekDays.map((d, dayIdx) => `
-              <div class="weekly-check-cell ${key(d) === tdKey ? 'today' : ''}">
+            ${weekDays
+							.map(
+								(d, dayIdx) => `
+              <div class="weekly-check-cell ${key(d) === tdKey ? "today" : ""}">
                 <button
-                  class="weekly-box-btn ${(row.c && row.c[dayIdx]) ? 'done' : ''} ${STATE.ui.popId === row.id + dayIdx ? 'pop' : ''}"
+                  class="weekly-box-btn ${row.c?.[dayIdx] ? "done" : ""} ${STATE.ui.popId === row.id + dayIdx ? "pop" : ""}"
                   data-action="toggle-habit-tick"
                   data-id="${row.id}"
                   data-day="${dayIdx}"
-                  aria-label="${L(d, { weekday: 'long' })}"
+                  aria-label="${L(d, { weekday: "long" })}"
                 >
-                  ${(row.c && row.c[dayIdx]) ? '✓' : ''}
+                  ${row.c?.[dayIdx] ? "✓" : ""}
                 </button>
               </div>
-            `).join('')}
-          `).join('')}
+            `,
+							)
+							.join("")}
+          `,
+						)
+						.join("")}
         </div>
       </div>
 
-      ${weekList.length
-        ? '<p style="color:var(--mute);font-size:13px;margin:12px 0 0">★ Starred habits stay pinned at the top. Tap any box to check off!</p>'
-        : '<p style="color:var(--mute);font-size:14px;text-align:center;padding:24px 0">No habits added for this week yet. Add your first above!</p>'}
+      ${
+				weekList.length
+					? '<p style="color:var(--mute);font-size:13px;margin:12px 0 0">★ Starred habits stay pinned at the top. Tap any box to check off!</p>'
+					: '<p style="color:var(--mute);font-size:14px;text-align:center;padding:24px 0">No habits added for this week yet. Add your first above!</p>'
+			}
     </section>
   `;
 }

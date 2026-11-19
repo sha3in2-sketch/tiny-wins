@@ -2,35 +2,35 @@
    TINYWINS OS — POMODORO & FOCUS MODE
    ========================================================================== */
 .pomodoro-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--pink-text);
-  color: #fff;
-  border-radius: var(--radius-pill);
-  padding: 6px 14px;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 4px 12px rgba(255, 111, 168, 0.35);
-  cursor: pointer;
-  transition: all 0.2s ease;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background: var(--pink-text);
+	color: #fff;
+	border-radius: var(--radius-pill);
+	padding: 6px 14px;
+	font-family: "Fredoka", sans-serif;
+	font-size: 14px;
+	font-weight: 500;
+	box-shadow: 0 4px 12px rgba(255, 111, 168, 0.35);
+	cursor: pointer;
+	transition: all 0.2s ease;
 }
 
 .pomodoro-pill:hover {
-  transform: scale(1.04);
+	transform: scale(1.04);
 }
 
 .pomodoro-card {
-  text-align: center;
-  padding: 24px;
+	text-align: center;
+	padding: 24px;
 }
 
 .pomodoro-time-display {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 54px;
-  font-weight: 600;
-  color: var(--pink-text);
-  margin: 12px 0;
-  letter-spacing: 2px;
+	font-family: "Fredoka", sans-serif;
+	font-size: 54px;
+	font-weight: 600;
+	color: var(--pink-text);
+	margin: 12px 0;
+	letter-spacing: 2px;
 }

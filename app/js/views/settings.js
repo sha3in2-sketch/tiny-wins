@@ -1,12 +1,12 @@
 /* ==========================================================================
    TINYWINS OS — SETTINGS VIEW
    ========================================================================== */
-import { getRoomId } from '../store.js';
+import { getRoomId } from "../store.js";
 
 export function renderSettingsView() {
-  const currentRoomId = getRoomId();
+	const currentRoomId = getRoomId();
 
-  return `
+	return `
     <section class="card">
       <div class="card-header">
         <h2>Settings & Preferences</h2>

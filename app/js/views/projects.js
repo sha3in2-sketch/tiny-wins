@@ -1,13 +1,12 @@
 /* ==========================================================================
    TINYWINS OS — PROJECTS & KANBAN VIEW
    ========================================================================== */
-import { STATE } from '../store.js';
-import { esc } from '../utils/escape.js';
+import { STATE } from "../store.js";
 
 export function renderProjectsView() {
-  const projects = STATE.projects || [];
+	const _projects = STATE.projects || [];
 
-  return `
+	return `
     <section class="card">
       <div class="projects-header">
         <div>

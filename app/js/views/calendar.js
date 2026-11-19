@@ -1,147 +1,162 @@
 /* ==========================================================================
    TINYWINS OS — CALENDAR VIEW (MONTH, WEEK TIME-GRID & DAY PLANNER)
    ========================================================================== */
-import { STATE, tasks } from '../store.js';
+import { STATE, tasks } from "../store.js";
 import {
-  getMonthMatrix,
-  monthTitle,
-  today,
-  L,
-  dt,
-  add,
-  mon,
-  key,
-  pad
-} from '../utils/date.js';
-import { esc } from '../utils/escape.js';
+	add,
+	dt,
+	getMonthMatrix,
+	key,
+	L,
+	mon,
+	monthTitle,
+	pad,
+	today,
+} from "../utils/date.js";
+import { esc } from "../utils/escape.js";
 
 // Configuration for Hourly Time Grid
-export const START_HOUR = 7;  // 7 AM
-export const END_HOUR = 23;   // 11 PM
+export const START_HOUR = 7; // 7 AM
+export const END_HOUR = 23; // 11 PM
 export const HOUR_HEIGHT = 64; // pixels per 1-hour row
 
 // Helper to format hour into 12-hour AM/PM label
 export function formatHour(h) {
-  const period = h >= 12 ? 'PM' : 'AM';
-  const displayH = h % 12 === 0 ? 12 : h % 12;
-  return `${displayH}${period}`;
+	const period = h >= 12 ? "PM" : "AM";
+	const displayH = h % 12 === 0 ? 12 : h % 12;
+	return `${displayH}${period}`;
 }
 
 // Helper to parse time string "12:15" or "12:15 PM" to hour and minute numbers
 export function parseTimeString(timeStr) {
-  if (!timeStr) return null;
-  const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(am|pm)?/i);
-  if (!match) return null;
-  let hour = parseInt(match[1], 10);
-  const min = parseInt(match[2], 10);
-  const modifier = match[3] ? match[3].toLowerCase() : null;
+	if (!timeStr) return null;
+	const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+	if (!match) return null;
+	let hour = parseInt(match[1], 10);
+	const min = parseInt(match[2], 10);
+	const modifier = match[3] ? match[3].toLowerCase() : null;
 
-  if (modifier === 'pm' && hour < 12) hour += 12;
-  if (modifier === 'am' && hour === 12) hour = 0;
+	if (modifier === "pm" && hour < 12) hour += 12;
+	if (modifier === "am" && hour === 12) hour = 0;
 
-  return { hour, min };
+	return { hour, min };
 }
 
 // Format 24h hour and minute to standard readable "12:15 PM"
 export function formatTimeLabel(hour, min) {
-  const period = hour >= 12 ? 'PM' : 'AM';
-  const displayH = hour % 12 === 0 ? 12 : hour % 12;
-  return `${displayH}:${pad(min)} ${period}`;
+	const period = hour >= 12 ? "PM" : "AM";
+	const displayH = hour % 12 === 0 ? 12 : hour % 12;
+	return `${displayH}:${pad(min)} ${period}`;
 }
 
 export function renderCalendarView() {
-  const currentYear = STATE.ui.calYear;
-  const currentMonth = STATE.ui.calMonth;
-  const viewMode = STATE.ui.calView || 'timegrid'; // 'timegrid' (default week) | 'daygrid' | 'month'
-  const displayDate = new Date(currentYear, currentMonth, 1);
-  const todayKey = today();
+	const currentYear = STATE.ui.calYear;
+	const currentMonth = STATE.ui.calMonth;
+	const viewMode = STATE.ui.calView || "timegrid"; // 'timegrid' (default week) | 'daygrid' | 'month'
+	const displayDate = new Date(currentYear, currentMonth, 1);
+	const todayKey = today();
 
-  let mainContentHtml = '';
+	let mainContentHtml = "";
 
-  // 1. MONTH VIEW MODE
-  if (viewMode === 'month') {
-    const daysHeader = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const matrix = getMonthMatrix(currentYear, currentMonth);
+	// 1. MONTH VIEW MODE
+	if (viewMode === "month") {
+		const daysHeader = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+		const matrix = getMonthMatrix(currentYear, currentMonth);
 
-    mainContentHtml = `
+		mainContentHtml = `
       <div class="cal-header-row">
-        ${daysHeader.map((d) => `<div>${d}</div>`).join('')}
+        ${daysHeader.map((d) => `<div>${d}</div>`).join("")}
       </div>
       <div class="cal-grid">
-        ${matrix.map((cell) => {
-          const dayTasks = tasks(cell.key);
-          const doneTasks = dayTasks.filter((t) => t.d).length;
-          const totalTasks = dayTasks.length;
-          const isToday = cell.isToday;
-          const isOther = !cell.isCurrentMonth;
-          const isSelected = STATE.ui.detailDate === cell.key;
+        ${matrix
+					.map((cell) => {
+						const dayTasks = tasks(cell.key);
+						const doneTasks = dayTasks.filter((t) => t.d).length;
+						const totalTasks = dayTasks.length;
+						const isToday = cell.isToday;
+						const isOther = !cell.isCurrentMonth;
+						const isSelected = STATE.ui.detailDate === cell.key;
 
-          return `
+						return `
             <div
-              class="cal-day-cell ${isToday ? 'today' : ''} ${isOther ? 'other-month' : ''} ${isSelected ? 'selected' : ''}"
+              class="cal-day-cell ${isToday ? "today" : ""} ${isOther ? "other-month" : ""} ${isSelected ? "selected" : ""}"
               data-action="open-day-detail"
               data-date="${cell.key}"
             >
               <div class="cal-day-top">
                 <span class="cal-day-num">${cell.dayNum}</span>
-                ${totalTasks > 0 ? `<span class="cal-badge-count">${doneTasks}/${totalTasks}</span>` : ''}
+                ${totalTasks > 0 ? `<span class="cal-badge-count">${doneTasks}/${totalTasks}</span>` : ""}
               </div>
 
               <!-- Indicators: Dots on mobile -->
               <div class="cal-indicators">
-                ${dayTasks.slice(0, 4).map((t) => `
-                  <span class="cal-dot ${t.d ? 'done' : t.time ? 'timed' : t.priority === 'high' ? 'high' : ''}"></span>
-                `).join('')}
+                ${dayTasks
+									.slice(0, 4)
+									.map(
+										(t) => `
+                  <span class="cal-dot ${t.d ? "done" : t.time ? "timed" : t.priority === "high" ? "high" : ""}"></span>
+                `,
+									)
+									.join("")}
               </div>
 
               <!-- Desktop preview pills -->
               <div class="cal-preview-list">
-                ${dayTasks.slice(0, 2).map((t) => `
-                  <span class="cal-preview-pill ${t.d ? 'done' : ''}">
-                    ${t.time ? `<b>${t.time}</b> ` : ''}${esc(t.t)}
+                ${dayTasks
+									.slice(0, 2)
+									.map(
+										(t) => `
+                  <span class="cal-preview-pill ${t.d ? "done" : ""}">
+                    ${t.time ? `<b>${t.time}</b> ` : ""}${esc(t.t)}
                   </span>
-                `).join('')}
-                ${totalTasks > 2 ? `<span style="font-size:10px;color:var(--mute);font-weight:700">+${totalTasks - 2} more</span>` : ''}
+                `,
+									)
+									.join("")}
+                ${totalTasks > 2 ? `<span style="font-size:10px;color:var(--mute);font-weight:700">+${totalTasks - 2} more</span>` : ""}
               </div>
             </div>
           `;
-        }).join('')}
+					})
+					.join("")}
       </div>
     `;
-  }
-  // 2. WEEK HOURLY TIME-GRID VIEW (NOTION / GCAL STYLE)
-  else if (viewMode === 'timegrid') {
-    const selectedDate = dt(STATE.ui.sel || todayKey);
-    const weekStart = mon(selectedDate);
-    const weekDays = [...Array(7)].map((_, i) => add(weekStart, i));
+	}
+	// 2. WEEK HOURLY TIME-GRID VIEW (NOTION / GCAL STYLE)
+	else if (viewMode === "timegrid") {
+		const selectedDate = dt(STATE.ui.sel || todayKey);
+		const weekStart = mon(selectedDate);
+		const weekDays = [...Array(7)].map((_, i) => add(weekStart, i));
 
-    const totalHours = END_HOUR - START_HOUR + 1;
-    const hours = [...Array(totalHours)].map((_, i) => START_HOUR + i);
+		const totalHours = END_HOUR - START_HOUR + 1;
+		const hours = [...Array(totalHours)].map((_, i) => START_HOUR + i);
 
-    // Calculate current live time position for red indicator
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMin = now.getMinutes();
-    const isNowInRange = currentHour >= START_HOUR && currentHour <= END_HOUR;
-    const currentTopPx = isNowInRange
-      ? (currentHour - START_HOUR) * HOUR_HEIGHT + (currentMin / 60) * HOUR_HEIGHT
-      : -1;
+		// Calculate current live time position for red indicator
+		const now = new Date();
+		const currentHour = now.getHours();
+		const currentMin = now.getMinutes();
+		const isNowInRange = currentHour >= START_HOUR && currentHour <= END_HOUR;
+		const currentTopPx = isNowInRange
+			? (currentHour - START_HOUR) * HOUR_HEIGHT +
+				(currentMin / 60) * HOUR_HEIGHT
+			: -1;
 
-    mainContentHtml = `
+		mainContentHtml = `
       <div class="time-grid-wrapper">
         <!-- Sticky Weekday Header -->
         <div class="time-grid-header">
           <div class="time-grid-header-cell" style="font-size:11px;line-height:36px;color:var(--mute)">GMT</div>
-          ${weekDays.map((d) => {
-            const dKey = key(d);
-            const isTd = dKey === todayKey;
-            return `
-              <div class="time-grid-header-cell ${isTd ? 'today' : ''}">
-                <span>${L(d, { weekday: 'short' })}</span>
+          ${weekDays
+						.map((d) => {
+							const dKey = key(d);
+							const isTd = dKey === todayKey;
+							return `
+              <div class="time-grid-header-cell ${isTd ? "today" : ""}">
+                <span>${L(d, { weekday: "short" })}</span>
                 <b>${d.getDate()}</b>
               </div>
             `;
-          }).join('')}
+						})
+						.join("")}
         </div>
 
         <!-- Scrollable Hourly Time Canvas -->
@@ -149,28 +164,39 @@ export function renderCalendarView() {
           <div class="time-grid-canvas">
             <!-- Time Axis Column -->
             <div class="time-gutter">
-              ${hours.map((h) => `
+              ${hours
+								.map(
+									(h) => `
                 <div class="time-gutter-hour">
                   <span>${formatHour(h)}</span>
                 </div>
-              `).join('')}
+              `,
+								)
+								.join("")}
             </div>
 
             <!-- 7 Day Columns -->
-            ${weekDays.map((d) => {
-              const dKey = key(d);
-              const isTd = dKey === todayKey;
-              const dayTasks = tasks(dKey);
+            ${weekDays
+							.map((d) => {
+								const dKey = key(d);
+								const isTd = dKey === todayKey;
+								const dayTasks = tasks(dKey);
 
-              return `
-                <div class="time-day-col ${isTd ? 'today' : ''}" data-date="${dKey}">
+								return `
+                <div class="time-day-col ${isTd ? "today" : ""}" data-date="${dKey}">
                   <!-- Red Current Time Indicator -->
-                  ${isTd && currentTopPx >= 0 ? `
+                  ${
+										isTd && currentTopPx >= 0
+											? `
                     <div class="current-time-line" style="top:${currentTopPx}px" title="Current Time"></div>
-                  ` : ''}
+                  `
+											: ""
+									}
 
                   <!-- 1-Hour Interactive Slots -->
-                  ${hours.map((h) => `
+                  ${hours
+										.map(
+											(h) => `
                     <div
                       class="time-slot-hour"
                       data-action="slot-click"
@@ -178,110 +204,142 @@ export function renderCalendarView() {
                       data-hour="${h}"
                       title="Click anywhere to add task at this time"
                     ></div>
-                  `).join('')}
+                  `,
+										)
+										.join("")}
 
                   <!-- Sub-Slot Blocks placed inside their hours -->
-                  ${dayTasks.filter((t) => t.time).map((t) => {
-                    const parsed = parseTimeString(t.time);
-                    if (!parsed || parsed.hour < START_HOUR || parsed.hour > END_HOUR) {
-                      return '';
-                    }
+                  ${dayTasks
+										.filter((t) => t.time)
+										.map((t) => {
+											const parsed = parseTimeString(t.time);
+											if (
+												!parsed ||
+												parsed.hour < START_HOUR ||
+												parsed.hour > END_HOUR
+											) {
+												return "";
+											}
 
-                    const topPx =
-                      (parsed.hour - START_HOUR) * HOUR_HEIGHT +
-                      (parsed.min / 60) * HOUR_HEIGHT;
-                    const durationMins = t.duration || 45;
-                    const heightPx = Math.max((durationMins / 60) * HOUR_HEIGHT - 3, 26);
+											const topPx =
+												(parsed.hour - START_HOUR) * HOUR_HEIGHT +
+												(parsed.min / 60) * HOUR_HEIGHT;
+											const durationMins = t.duration || 45;
+											const heightPx = Math.max(
+												(durationMins / 60) * HOUR_HEIGHT - 3,
+												26,
+											);
 
-                    // Pick color styling
-                    const colorClass =
-                      t.priority === 'high'
-                        ? 'color-pink'
-                        : t.priority === 'med'
-                        ? 'color-sun'
-                        : 'color-blue';
+											// Pick color styling
+											const colorClass =
+												t.priority === "high"
+													? "color-pink"
+													: t.priority === "med"
+														? "color-sun"
+														: "color-blue";
 
-                    return `
+											return `
                       <div
-                        class="time-block ${colorClass} ${t.d ? 'done' : ''}"
+                        class="time-block ${colorClass} ${t.d ? "done" : ""}"
                         style="top:${topPx}px;height:${heightPx}px;"
-                        data-action="open-day-detail"
-                        data-date="${dKey}"
                         title="${esc(t.t)} (${t.time})"
                       >
-                        <div class="time-block-content">
+                        <div class="time-block-content" data-action="open-edit-task" data-id="${t.id}" data-date="${dKey}">
                           <button
-                            class="time-block-check ${t.d ? 'checked' : ''}"
+                            class="time-block-check ${t.d ? "checked" : ""}"
                             data-action="toggle-task-done"
                             data-id="${t.id}"
                             data-date="${dKey}"
-                            title="${t.d ? 'Completed' : 'Mark done'}"
+                            title="${t.d ? "Completed" : "Mark done"}"
                           >
-                            ${t.d ? '✓' : ''}
+                            ${t.d ? "✓" : ""}
                           </button>
                           <span class="time-block-title">${esc(t.t)}</span>
                           <span class="time-block-time">${t.time}</span>
                         </div>
-                        <button
-                          class="time-block-del"
-                          data-action="delete-task"
-                          data-id="${t.id}"
-                          data-date="${dKey}"
-                          title="Delete"
-                        >×</button>
+                        <div class="time-block-actions">
+                          <button
+                            class="time-block-edit"
+                            data-action="open-edit-task"
+                            data-id="${t.id}"
+                            data-date="${dKey}"
+                            title="Edit"
+                          >✏️</button>
+                          <button
+                            class="time-block-del"
+                            data-action="delete-task"
+                            data-id="${t.id}"
+                            data-date="${dKey}"
+                            title="Delete"
+                          >×</button>
+                        </div>
                       </div>
                     `;
-                  }).join('')}
+										})
+										.join("")}
                 </div>
               `;
-            }).join('')}
+							})
+							.join("")}
           </div>
         </div>
       </div>
     `;
-  }
-  // 3. DAY FOCUSED TIME-GRID
-  else {
-    const activeDateKey = STATE.ui.sel || todayKey;
-    const activeDate = dt(activeDateKey);
-    const dayTasks = tasks(activeDateKey);
-    const totalHours = END_HOUR - START_HOUR + 1;
-    const hours = [...Array(totalHours)].map((_, i) => START_HOUR + i);
+	}
+	// 3. DAY FOCUSED TIME-GRID
+	else {
+		const activeDateKey = STATE.ui.sel || todayKey;
+		const activeDate = dt(activeDateKey);
+		const dayTasks = tasks(activeDateKey);
+		const totalHours = END_HOUR - START_HOUR + 1;
+		const hours = [...Array(totalHours)].map((_, i) => START_HOUR + i);
 
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMin = now.getMinutes();
-    const isNowInRange = currentHour >= START_HOUR && currentHour <= END_HOUR;
-    const currentTopPx = (activeDateKey === todayKey && isNowInRange)
-      ? (currentHour - START_HOUR) * HOUR_HEIGHT + (currentMin / 60) * HOUR_HEIGHT
-      : -1;
+		const now = new Date();
+		const currentHour = now.getHours();
+		const currentMin = now.getMinutes();
+		const isNowInRange = currentHour >= START_HOUR && currentHour <= END_HOUR;
+		const currentTopPx =
+			activeDateKey === todayKey && isNowInRange
+				? (currentHour - START_HOUR) * HOUR_HEIGHT +
+					(currentMin / 60) * HOUR_HEIGHT
+				: -1;
 
-    mainContentHtml = `
+		mainContentHtml = `
       <div class="time-grid-wrapper">
         <div class="time-grid-header day-mode">
           <div class="time-grid-header-cell" style="font-size:11px;line-height:36px;color:var(--mute)">GMT</div>
           <div class="time-grid-header-cell today">
-            <span>${L(activeDate, { weekday: 'long' })}</span>
-            <b>${L(activeDate, { day: 'numeric', month: 'long', year: 'numeric' })}</b>
+            <span>${L(activeDate, { weekday: "long" })}</span>
+            <b>${L(activeDate, { day: "numeric", month: "long", year: "numeric" })}</b>
           </div>
         </div>
 
         <div class="time-grid-scroll" id="time-grid-scroll">
           <div class="time-grid-canvas day-mode">
             <div class="time-gutter">
-              ${hours.map((h) => `
+              ${hours
+								.map(
+									(h) => `
                 <div class="time-gutter-hour">
                   <span>${formatHour(h)}</span>
                 </div>
-              `).join('')}
+              `,
+								)
+								.join("")}
             </div>
 
             <div class="time-day-col today" data-date="${activeDateKey}">
-              ${currentTopPx >= 0 ? `
+              ${
+								currentTopPx >= 0
+									? `
                 <div class="current-time-line" style="top:${currentTopPx}px"></div>
-              ` : ''}
+              `
+									: ""
+							}
 
-              ${hours.map((h) => `
+              ${hours
+								.map(
+									(h) => `
                 <div
                   class="time-slot-hour"
                   data-action="slot-click"
@@ -289,65 +347,93 @@ export function renderCalendarView() {
                   data-hour="${h}"
                   title="Click to schedule at this hour"
                 ></div>
-              `).join('')}
+              `,
+								)
+								.join("")}
 
-              ${dayTasks.filter((t) => t.time).map((t) => {
-                const parsed = parseTimeString(t.time);
-                if (!parsed || parsed.hour < START_HOUR || parsed.hour > END_HOUR) return '';
+              ${dayTasks
+								.filter((t) => t.time)
+								.map((t) => {
+									const parsed = parseTimeString(t.time);
+									if (
+										!parsed ||
+										parsed.hour < START_HOUR ||
+										parsed.hour > END_HOUR
+									)
+										return "";
 
-                const topPx =
-                  (parsed.hour - START_HOUR) * HOUR_HEIGHT +
-                  (parsed.min / 60) * HOUR_HEIGHT;
-                const durationMins = t.duration || 45;
-                const heightPx = Math.max((durationMins / 60) * HOUR_HEIGHT - 3, 30);
+									const topPx =
+										(parsed.hour - START_HOUR) * HOUR_HEIGHT +
+										(parsed.min / 60) * HOUR_HEIGHT;
+									const durationMins = t.duration || 45;
+									const heightPx = Math.max(
+										(durationMins / 60) * HOUR_HEIGHT - 3,
+										30,
+									);
 
-                const colorClass =
-                  t.priority === 'high' ? 'color-pink' : t.priority === 'med' ? 'color-sun' : 'color-blue';
+									const colorClass =
+										t.priority === "high"
+											? "color-pink"
+											: t.priority === "med"
+												? "color-sun"
+												: "color-blue";
 
-                return `
+									return `
                   <div
-                    class="time-block ${colorClass} ${t.d ? 'done' : ''}"
+                    class="time-block ${colorClass} ${t.d ? "done" : ""}"
                     style="top:${topPx}px;height:${heightPx}px;"
-                    data-action="open-day-detail"
-                    data-date="${activeDateKey}"
                   >
-                    <div class="time-block-content">
+                    <div class="time-block-content" data-action="open-edit-task" data-id="${t.id}" data-date="${activeDateKey}">
                       <button
-                        class="time-block-check ${t.d ? 'checked' : ''}"
+                        class="time-block-check ${t.d ? "checked" : ""}"
                         data-action="toggle-task-done"
                         data-id="${t.id}"
                         data-date="${activeDateKey}"
                       >
-                        ${t.d ? '✓' : ''}
+                        ${t.d ? "✓" : ""}
                       </button>
                       <span class="time-block-title" style="font-size:13px">${esc(t.t)}</span>
                       <span class="time-block-time" style="font-size:11px">${t.time}</span>
                     </div>
-                    <button
-                      class="time-block-del"
-                      data-action="delete-task"
-                      data-id="${t.id}"
-                      data-date="${activeDateKey}"
-                    >×</button>
+                    <div class="time-block-actions">
+                      <button
+                        class="time-block-edit"
+                        data-action="open-edit-task"
+                        data-id="${t.id}"
+                        data-date="${activeDateKey}"
+                        title="Edit"
+                      >✏️</button>
+                      <button
+                        class="time-block-del"
+                        data-action="delete-task"
+                        data-id="${t.id}"
+                        data-date="${activeDateKey}"
+                      >×</button>
+                    </div>
                   </div>
                 `;
-              }).join('')}
+								})
+								.join("")}
             </div>
           </div>
         </div>
       </div>
     `;
-  }
+	}
 
-  // Header Title
-  const navTitle =
-    viewMode === 'timegrid'
-      ? `Week of ${L(mon(dt(STATE.ui.sel || todayKey)), { day: 'numeric', month: 'short' })}`
-      : viewMode === 'daygrid'
-      ? L(dt(STATE.ui.sel || todayKey), { weekday: 'short', day: 'numeric', month: 'short' })
-      : monthTitle(displayDate);
+	// Header Title
+	const navTitle =
+		viewMode === "timegrid"
+			? `Week of ${L(mon(dt(STATE.ui.sel || todayKey)), { day: "numeric", month: "short" })}`
+			: viewMode === "daygrid"
+				? L(dt(STATE.ui.sel || todayKey), {
+						weekday: "short",
+						day: "numeric",
+						month: "short",
+					})
+				: monthTitle(displayDate);
 
-  return `
+	return `
     <section class="card" style="padding:18px">
       <!-- Calendar Top Bar -->
       <div class="calendar-view-controls">
@@ -361,7 +447,7 @@ export function renderCalendarView() {
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           <div class="cal-mode-pills">
             <button
-              class="cal-mode-btn ${viewMode === 'timegrid' ? 'active' : ''}"
+              class="cal-mode-btn ${viewMode === "timegrid" ? "active" : ""}"
               data-action="set-cal-mode"
               data-mode="timegrid"
               title="Notion / Google Calendar Week Time Grid"
@@ -369,7 +455,7 @@ export function renderCalendarView() {
               ⏱️ Week Grid
             </button>
             <button
-              class="cal-mode-btn ${viewMode === 'daygrid' ? 'active' : ''}"
+              class="cal-mode-btn ${viewMode === "daygrid" ? "active" : ""}"
               data-action="set-cal-mode"
               data-mode="daygrid"
               title="Single Day Time Grid"
@@ -377,7 +463,7 @@ export function renderCalendarView() {
               📅 Day
             </button>
             <button
-              class="cal-mode-btn ${viewMode === 'month' ? 'active' : ''}"
+              class="cal-mode-btn ${viewMode === "month" ? "active" : ""}"
               data-action="set-cal-mode"
               data-mode="month"
               title="Full Month Calendar"
