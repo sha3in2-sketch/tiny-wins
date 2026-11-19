@@ -1,0 +1,268 @@
+/* ==========================================================================
+   TINYWINS OS — TASKS & HABIT MATRIX
+   ========================================================================== */
+.task-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 8px;
+  border-bottom: 1px dashed var(--line);
+  transition: background 0.15s ease, opacity 0.2s ease;
+  position: relative;
+}
+
+.task-row:last-child {
+  border-bottom: 0;
+}
+
+.task-row:hover {
+  background: var(--surface-raised);
+  border-radius: 12px;
+}
+
+.task-row.done span.task-text {
+  color: var(--mute);
+  text-decoration: line-through;
+}
+
+/* Priority Indicator Border */
+.task-row.priority-high {
+  box-shadow: inset 4px 0 0 var(--pink);
+  border-radius: 8px 0 0 8px;
+}
+
+.task-row.priority-med {
+  box-shadow: inset 4px 0 0 var(--sun);
+  border-radius: 8px 0 0 8px;
+}
+
+.task-text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.task-time-chip {
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--pl);
+  color: var(--p);
+  padding: 1px 7px;
+  border-radius: 6px;
+}
+
+.task-tag-chip {
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--blue-bg);
+  color: var(--blue);
+  padding: 1px 6px;
+  border-radius: 6px;
+}
+
+/* Checkbox Button */
+.task-check {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2.5px solid #cfc9f3;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+  flex: none;
+  background: #fff;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.task-check:hover {
+  border-color: var(--mint);
+  transform: scale(1.08);
+}
+
+.task-check.done {
+  background: var(--mint);
+  border-color: var(--mint);
+  box-shadow: 0 2px 8px rgba(79, 209, 161, 0.4);
+}
+
+.task-del-btn {
+  color: #c3bfdc;
+  font-size: 20px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+}
+
+.task-row:hover .task-del-btn {
+  opacity: 1;
+}
+
+.task-del-btn:hover {
+  background: var(--pl2);
+  color: var(--pink);
+}
+
+/* History Bar Chart (14-day) */
+.history-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 120px;
+  margin-top: 10px;
+}
+
+.history-bar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+}
+
+.history-bar i {
+  display: block;
+  width: 100%;
+  max-width: 32px;
+  border-radius: 10px 10px 5px 5px;
+  background: var(--line);
+  min-height: 6px;
+  transition: height 0.4s ease, background 0.2s ease;
+}
+
+.history-bar small {
+  font-size: 11px;
+  color: var(--mute);
+  font-weight: 700;
+}
+
+.history-bar.active small {
+  color: var(--p);
+}
+
+.history-bar.active i {
+  outline: 3px solid var(--sun);
+  outline-offset: 2px;
+}
+
+/* Weekly Habit Planner Matrix */
+.weekly-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -8px;
+  padding: 0 8px 8px;
+}
+
+.weekly-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) repeat(7, 46px);
+  align-items: center;
+  min-width: 530px;
+}
+
+.weekly-grid > div {
+  padding: 8px 0;
+}
+
+.weekly-header-day {
+  text-align: center;
+  font: 500 13px 'Fredoka', sans-serif;
+  color: var(--mute);
+  line-height: 1.2;
+  border-radius: 12px;
+  padding: 6px 0;
+}
+
+.weekly-header-day b {
+  display: block;
+  font-size: 17px;
+  color: var(--ink);
+}
+
+.weekly-header-day.today {
+  background: var(--sun);
+  color: var(--ink);
+}
+
+.weekly-task-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 8px !important;
+}
+
+.weekly-task-cell.high-priority {
+  background: linear-gradient(90deg, var(--pl2), transparent);
+  border-radius: 14px 0 0 14px;
+  box-shadow: inset 4px 0 0 var(--pink);
+}
+
+.weekly-star-btn {
+  font-size: 20px;
+  color: #d2cdee;
+  width: 28px;
+  flex: none;
+}
+
+.weekly-task-cell.high-priority .weekly-star-btn {
+  color: var(--sun);
+}
+
+.weekly-check-cell {
+  display: grid;
+  place-items: center;
+}
+
+.weekly-check-cell.today {
+  background: #fff8e1;
+  border-radius: 10px;
+}
+
+.weekly-box-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2.5px solid #cfc9f3;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+.weekly-box-btn.done {
+  background: var(--mint);
+  border-color: var(--mint);
+}
+
+.weekly-prog-bar {
+  height: 14px;
+  background: var(--pl);
+  border-radius: 99px;
+  overflow: hidden;
+  flex: 1;
+  min-width: 140px;
+}
+
+.weekly-prog-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--p), var(--pink));
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}

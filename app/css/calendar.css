@@ -1,0 +1,518 @@
+/* ==========================================================================
+   TINYWINS OS — CALENDAR & EVENT VIEWS (MONTH, WEEK & HOURLY TIME-GRID)
+   ========================================================================== */
+.calendar-view-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.cal-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cal-title {
+  font-size: 24px;
+  min-width: 190px;
+}
+
+/* View Mode Switcher */
+.cal-mode-pills {
+  display: inline-flex;
+  padding: 4px;
+  background: var(--pl);
+  border-radius: var(--radius-pill);
+  gap: 4px;
+}
+
+.cal-mode-btn {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+  color: var(--mute);
+  transition: all 0.2s ease;
+}
+
+.cal-mode-btn.active {
+  background: var(--p);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(123, 108, 240, 0.35);
+}
+
+/* ==========================================================================
+   MONTH GRID VIEW
+   ========================================================================== */
+.cal-header-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  text-align: center;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mute);
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.cal-day-cell {
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: 18px;
+  min-height: 96px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.cal-day-cell:hover {
+  border-color: var(--p);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(123, 108, 240, 0.12);
+}
+
+.cal-day-cell.other-month {
+  opacity: 0.38;
+  background: transparent;
+}
+
+.cal-day-cell.today {
+  border-color: var(--sun);
+  background: linear-gradient(180deg, #fffbee 0%, #ffffff 100%);
+  box-shadow: 0 4px 14px rgba(255, 201, 77, 0.22);
+}
+
+.cal-day-cell.selected {
+  outline: 3px solid var(--p);
+  outline-offset: 1px;
+}
+
+.cal-day-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cal-day-num {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.cal-day-cell.today .cal-day-num {
+  background: var(--sun);
+  color: var(--ink);
+  box-shadow: 0 2px 6px rgba(255, 201, 77, 0.5);
+}
+
+.cal-badge-count {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--pl);
+  color: var(--p);
+}
+
+.cal-indicators {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 4px;
+}
+
+.cal-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--p);
+}
+
+.cal-dot.done { background: var(--mint); }
+.cal-dot.high { background: var(--pink); }
+.cal-dot.timed { background: var(--blue); }
+
+.cal-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.cal-preview-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: var(--pl);
+  color: var(--p);
+}
+
+.cal-preview-pill.done {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* ==========================================================================
+   HOURLY TIME-GRID VIEW (NOTION CALENDAR / GOOGLE CALENDAR STYLE)
+   ========================================================================== */
+.time-grid-wrapper {
+  background: #ffffff;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+}
+
+/* Sticky Weekday Header Row */
+.time-grid-header {
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+  background: var(--surface-raised);
+  border-bottom: 2px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.time-grid-header.day-mode {
+  grid-template-columns: 64px 1fr;
+}
+
+.time-grid-header-cell {
+  text-align: center;
+  padding: 10px 4px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 13px;
+  color: var(--mute);
+  border-left: 1px solid var(--line);
+  user-select: none;
+}
+
+.time-grid-header-cell:first-child {
+  border-left: 0;
+}
+
+.time-grid-header-cell b {
+  display: block;
+  font-size: 18px;
+  color: var(--ink);
+  margin-top: 2px;
+}
+
+.time-grid-header-cell.today {
+  background: #fff8e1;
+}
+
+.time-grid-header-cell.today b {
+  color: var(--p);
+}
+
+/* Scrollable Scroll Canvas */
+.time-grid-scroll {
+  height: 620px;
+  overflow-y: auto;
+  overflow-x: auto;
+  position: relative;
+  background: #faf9ff;
+  scroll-behavior: smooth;
+}
+
+.time-grid-canvas {
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+  min-width: 650px;
+  position: relative;
+}
+
+.time-grid-canvas.day-mode {
+  grid-template-columns: 64px 1fr;
+  min-width: 0;
+}
+
+/* Time axis column (7AM, 8AM, 9AM, ...) */
+.time-gutter {
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  background: var(--surface-raised);
+}
+
+.time-gutter-hour {
+  height: 64px;
+  padding: 4px 6px 0 0;
+  text-align: right;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mute);
+  font-family: 'Fredoka', sans-serif;
+  border-bottom: 1px solid transparent;
+  box-sizing: border-box;
+}
+
+/* Day Column Grid */
+.time-day-col {
+  position: relative;
+  border-left: 1px solid var(--line);
+  background: #fff;
+  transition: background 0.15s ease;
+}
+
+.time-day-col.today {
+  background: #fffdf9;
+}
+
+/* 1-Hour Slot container */
+.time-slot-hour {
+  height: 64px;
+  border-bottom: 1px solid #ede9fe;
+  position: relative;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background 0.12s ease;
+}
+
+.time-slot-hour:hover {
+  background: rgba(123, 108, 240, 0.05);
+}
+
+/* Half-hour dashed guide line */
+.time-slot-hour::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed rgba(231, 227, 251, 0.7);
+  pointer-events: none;
+}
+
+/* Quarter-hour hover preview indicator */
+.slot-hover-highlight {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  height: 28px;
+  background: rgba(123, 108, 240, 0.15);
+  border: 1.5px dashed var(--p);
+  border-radius: 8px;
+  pointer-events: none;
+  display: none;
+  z-index: 5;
+}
+
+/* ==========================================================================
+   SUB-SLOT TIME BLOCKS ("SLOT INSIDE A SLOT")
+   ========================================================================== */
+.time-block {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  border-radius: 9px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  background: #4a90e2;
+  box-shadow: 0 3px 10px rgba(74, 144, 226, 0.28);
+  cursor: pointer;
+  z-index: 10;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s ease;
+  user-select: none;
+}
+
+.time-block:hover {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4);
+  z-index: 15;
+}
+
+/* Notion / GCal Color Themes for Sub-slots */
+.time-block.color-blue {
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+  border-left: 3.5px solid #205081;
+}
+
+.time-block.color-teal {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  border-left: 3.5px solid #042f2e;
+}
+
+.time-block.color-purple {
+  background: linear-gradient(135deg, #7b6cf0 0%, #6858e8 100%);
+  border-left: 3.5px solid #4338ca;
+}
+
+.time-block.color-pink {
+  background: linear-gradient(135deg, #ff6fa8 0%, #e6528d 100%);
+  border-left: 3.5px solid #9d174d;
+}
+
+.time-block.color-sun {
+  background: linear-gradient(135deg, #ffc94d 0%, #f59e0b 100%);
+  color: #451a03;
+  border-left: 3.5px solid #78350f;
+}
+
+.time-block.done {
+  opacity: 0.55;
+  filter: grayscale(0.4);
+}
+
+.time-block.done .time-block-title {
+  text-decoration: line-through;
+}
+
+.time-block-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.time-block-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 700;
+}
+
+.time-block-time {
+  font-size: 10px;
+  opacity: 0.9;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.time-block-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.2);
+  flex: none;
+  cursor: pointer;
+}
+
+.time-block-check.checked {
+  background: #fff;
+  color: #198754;
+  border-color: #fff;
+}
+
+.time-block-del {
+  font-size: 16px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  opacity: 0.7;
+  color: #fff;
+  flex: none;
+  cursor: pointer;
+}
+
+.time-block-del:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Red / Neon Current Time Indicator Line */
+.current-time-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #ff4757;
+  z-index: 18;
+  pointer-events: none;
+  box-shadow: 0 0 8px rgba(255, 71, 87, 0.6);
+}
+
+.current-time-line::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff4757;
+  box-shadow: 0 0 6px rgba(255, 71, 87, 0.8);
+}
+
+/* Quick Slot Creation Popover */
+.quick-slot-popover {
+  position: fixed;
+  background: #fff;
+  border: 2px solid var(--p);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 260px;
+  animation: slideup 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.quick-slot-popover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--p);
+}
+
+@media (max-width: 720px) {
+  .time-grid-canvas {
+    min-width: 580px;
+  }
+  .time-grid-scroll {
+    height: 520px;
+  }
+}

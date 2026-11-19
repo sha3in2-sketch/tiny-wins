@@ -439,6 +439,7 @@ function render() {
      <button class="sync-badge ${syncStatus === 'connected' ? 'online' : (syncStatus === 'connecting' ? 'syncing' : '')}" id="sync-badge" data-a="open-modal" title="24/7 Cloud Sync & Connect Phone">
        <span class="sync-dot"></span><span>${syncStatus === 'connected' ? '24/7 Synced' : (syncStatus === 'connecting' ? 'Syncing...' : 'Offline')}</span>
      </button>
+     <a href="./app/index.html" class="pill" style="background:linear-gradient(135deg,#7b6cf0,#ff6fa8);color:#fff;text-decoration:none;box-shadow:0 3px 10px rgba(123,108,240,0.3)" title="Open new Calendar & Time-Grid OS">🗓️ Calendar OS ➔</a>
      <button class="pill" data-a="open-modal" title="Connect Phone or other devices">📱 Phone</button>
      <button class="install-btn ${deferredInstallPrompt ? 'visible' : ''}" id="install-btn" data-a="install">📲 Install</button>
      <div class="tabs" role="tablist">

@@ -1,0 +1,60 @@
+/* ==========================================================================
+   TINYWINS OS — DESIGN TOKENS
+   ========================================================================== */
+:root {
+  /* Core brand palette */
+  --bg: #f6f4ff;
+  --ink: #2b2850;
+  --mute: #8985aa;
+  --card: #ffffff;
+  --line: #e7e3fb;
+  --line-strong: #d2cbee;
+
+  /* Primary Accent & Glows */
+  --p: #7b6cf0;
+  --p-hover: #6c5ce7;
+  --pl: #ece9ff;
+  --pl-hover: #e0dcfe;
+
+  /* Functional Status Colors */
+  --mint: #4fd1a1;
+  --mint-bg: #dcf8ee;
+  --mint-text: #198754;
+
+  --sun: #ffc94d;
+  --sun-bg: #fff3cf;
+  --sun-text: #a86c00;
+
+  --pink: #ff6fa8;
+  --pl2: #ffe3ef;
+  --pink-text: #c02868;
+
+  /* Extended OS categories */
+  --blue: #4a90e2;
+  --blue-bg: #eaf3ff;
+  --teal: #14b8a6;
+  --teal-bg: #e6faf7;
+  --amber: #f59e0b;
+  --amber-bg: #fef3c7;
+  --purple-deep: #4c3f91;
+
+  /* Elevation & Glassmorphism */
+  --surface-raised: #faf9ff;
+  --glass: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(231, 227, 251, 0.9);
+  --shadow-sm: 0 2px 8px rgba(43, 40, 80, 0.05);
+  --shadow-md: 0 8px 24px rgba(43, 40, 80, 0.09);
+  --shadow-lg: 0 20px 48px rgba(43, 40, 80, 0.16);
+
+  /* Geometry standards */
+  --radius-card: 26px;
+  --radius-modal: 28px;
+  --radius-input: 16px;
+  --radius-pill: 999px;
+  --radius-sm: 12px;
+
+  /* Safe areas */
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
