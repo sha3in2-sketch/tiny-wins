@@ -144,7 +144,7 @@ export function loadState() {
 }
 
 // Save state to localStorage immediately
-export function saveState() {
+export function saveState(skipNotify = false) {
 	try {
 		const payload = {
 			days: STATE.days,
@@ -162,7 +162,9 @@ export function saveState() {
 	} catch (err) {
 		console.error("Failed to save state to localStorage:", err);
 	}
-	notify();
+	if (!skipNotify) {
+		notify();
+	}
 }
 
 // Room ID management

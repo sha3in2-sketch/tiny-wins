@@ -61,10 +61,16 @@ initRouter();
 
 // 2. Subscribe render loop to store & sync changes
 subscribe(() => {
+	if (document.activeElement?.id === "journal-input") {
+		return;
+	}
 	renderApp();
 });
 
 onSyncStatusChange(() => {
+	if (document.activeElement?.id === "journal-input") {
+		return;
+	}
 	renderApp();
 });
 
@@ -586,11 +592,40 @@ document.addEventListener("click", async (e) => {
 	// --- Journal Actions ---
 	if (action === "set-mood") {
 		const score = parseInt(target.dataset.score, 10);
-		const date = dateKey || today();
+		const date = dateKey || target.dataset.date || STATE.ui.sel || today();
 		STATE.notes[date] = STATE.notes[date] || { body: "", mood: 3, energy: 3 };
 		STATE.notes[date].mood = score;
+		STATE.notes[date].updatedAt = new Date().toISOString();
 		saveState();
 		debouncedPush();
+		return;
+	}
+
+	if (action === "journal-prev-day") {
+		const cur = STATE.ui.sel || today();
+		STATE.ui.sel = key(add(dt(cur), -1));
+		renderApp();
+		return;
+	}
+
+	if (action === "journal-next-day") {
+		const cur = STATE.ui.sel || today();
+		STATE.ui.sel = key(add(dt(cur), 1));
+		renderApp();
+		return;
+	}
+
+	if (action === "journal-go-today") {
+		STATE.ui.sel = today();
+		renderApp();
+		return;
+	}
+
+	if (action === "journal-select-date") {
+		if (target.dataset.date) {
+			STATE.ui.sel = target.dataset.date;
+			renderApp();
+		}
 		return;
 	}
 
@@ -852,13 +887,71 @@ document.addEventListener("keydown", (e) => {
 	}
 });
 
-// 5. Journal text input auto-save listener
+// 5. Journal text input & energy slider live auto-save listener
+let journalSaveDebounceTimer = null;
+
 document.addEventListener("input", (e) => {
 	if (e.target.id === "journal-input") {
-		const date = e.target.dataset.date || today();
+		const date = e.target.dataset.date || STATE.ui.sel || today();
 		STATE.notes[date] = STATE.notes[date] || { body: "", mood: 3, energy: 3 };
 		STATE.notes[date].body = e.target.value;
-		saveState();
+		STATE.notes[date].updatedAt = new Date().toISOString();
+
+		// Save state silently without triggering subscriber render loop (which would wipe textarea focus)
+		saveState(true);
+		debouncedPush();
+
+		const indicator = document.getElementById("journal-saved-indicator");
+		if (indicator) {
+			indicator.textContent = "Saving...";
+			clearTimeout(journalSaveDebounceTimer);
+			journalSaveDebounceTimer = setTimeout(() => {
+				indicator.textContent = "✓ Auto-saved locally";
+			}, 350);
+		}
+		return;
+	}
+
+	// Live slider feedback for energy level
+	if (
+		e.target.id === "journal-energy-slider" ||
+		e.target.dataset.action === "set-energy"
+	) {
+		const val = parseInt(e.target.value, 10);
+		const date = e.target.dataset.date || STATE.ui.sel || today();
+		STATE.notes[date] = STATE.notes[date] || { body: "", mood: 3, energy: 3 };
+		STATE.notes[date].energy = val;
+		STATE.notes[date].updatedAt = new Date().toISOString();
+
+		const label = document.getElementById("journal-energy-label");
+		if (label) {
+			label.textContent = `${val}/5`;
+		}
+
+		saveState(true);
+		debouncedPush();
+		return;
+	}
+});
+
+// 6. Change listener (e.g. date picker selection & range commit)
+document.addEventListener("change", (e) => {
+	if (e.target.dataset.action === "journal-pick-date" && e.target.value) {
+		STATE.ui.sel = e.target.value;
+		renderApp();
+		return;
+	}
+
+	if (
+		e.target.id === "journal-energy-slider" ||
+		e.target.dataset.action === "set-energy"
+	) {
+		const val = parseInt(e.target.value, 10);
+		const date = e.target.dataset.date || STATE.ui.sel || today();
+		STATE.notes[date] = STATE.notes[date] || { body: "", mood: 3, energy: 3 };
+		STATE.notes[date].energy = val;
+		STATE.notes[date].updatedAt = new Date().toISOString();
+		saveState(true);
 		debouncedPush();
 	}
 });
